@@ -4,6 +4,7 @@ import {
   createDataStreamResponse,
   smoothStream,
   streamText,
+  generateText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { systemPrompt } from '@/lib/ai/prompts';
@@ -25,11 +26,20 @@ import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
+import type { GoogleGenerativeAIProviderMetadata, GoogleGenerativeAIProviderOptions } from '@ai-sdk/google';
 
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  console.log('POST /api/chat: Request received');
   try {
+    const requestData = await request.json();
+    console.log('Request data:', JSON.stringify({
+      id: requestData.id,
+      messageCount: requestData.messages?.length || 0,
+      selectedChatModel: requestData.selectedChatModel,
+    }));
+
     const {
       id,
       messages,
@@ -38,7 +48,9 @@ export async function POST(request: Request) {
       id: string;
       messages: Array<UIMessage>;
       selectedChatModel: string;
-    } = await request.json();
+    } = requestData;
+
+    console.log(`Using chat model: ${selectedChatModel}`);
 
     // const session = await auth();
     const session = { user: { id: 'temp-user-id' }, expires: 'temp-expires' }; // Temporarily disable auth
@@ -53,55 +65,37 @@ export async function POST(request: Request) {
     const userMessage = getMostRecentUserMessage(messages);
 
     if (!userMessage) {
+      console.log('No user message found');
       return new Response('No user message found', { status: 400 });
     }
 
-    // const chat = await getChatById({ id }); // Temporarily disable database query
+    console.log('User message:', JSON.stringify({
+      id: userMessage.id,
+      parts: userMessage.parts.map(part => 
+        part.type === 'text' ? 
+          { type: 'text', text: (part.text || '').substring(0, 100) + (part.text?.length > 100 ? '...' : '') } : 
+          { type: part.type }
+      ),
+    }));
 
-    // Temporarily disable chat existence check and saving
-    /*
-    if (!chat) {
-      const title = await generateTitleFromUserMessage({
-        message: userMessage,
-      });
-
-      await saveChat({ id, userId: session.user.id, title });
-    } else {
-      if (chat.userId !== session.user.id) {
-        return new Response('Unauthorized', { status: 401 });
-      }
+    // Configure provider options based on model
+    const providerOptions: { google?: GoogleGenerativeAIProviderOptions } = {};
+    
+    if (selectedChatModel === 'image-model') {
+      // Enable both text and image output for image model
+      providerOptions.google = {
+        responseModalities: ['TEXT', 'IMAGE'],
+      };
     }
-    */
-    // Handle chat saving logic without session ID if needed, or skip
-    // Temporarily disable chat saving logic
-    /*
-    if (!chat) {
-      // const title = await generateTitleFromUserMessage({ message: userMessage }); // Title generation might still be useful if needed elsewhere, but saving is disabled
-      // Temporarily save chat without user ID or use a default/placeholder
-      // await saveChat({ id, userId: 'temp-user-id', title });
-    } else {
-      // Skip user ID check for existing chats when auth is disabled
-    }
-    */
 
-    // Temporarily disable saving user message
-    /*
-    await saveMessages({
-      messages: [
-        {
-          chatId: id,
-          id: userMessage.id,
-          role: 'user',
-          parts: userMessage.parts,
-          attachments: userMessage.experimental_attachments ?? [],
-          createdAt: new Date(),
-        },
-      ],
-    });
-    */
+    console.log('Provider options:', JSON.stringify(providerOptions));
 
+    // Use streaming response as expected by the useChat hook
     return createDataStreamResponse({
       execute: (dataStream) => {
+        console.log('Starting streaming response');
+        console.time('streamText');
+        
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel }),
@@ -128,49 +122,14 @@ export async function POST(request: Request) {
             }),
           },
           onFinish: async ({ response }) => {
-            // Temporarily remove session check
-            // if (session.user?.id) {
-              try {
-                const assistantId = getTrailingMessageId({
-                  messages: response.messages.filter(
-                    (message) => message.role === 'assistant',
-                  ),
-                });
-
-                if (!assistantId) {
-                  throw new Error('No assistant message found!');
-                }
-
-                const [, assistantMessage] = appendResponseMessages({
-                  messages: [userMessage],
-                  responseMessages: response.messages,
-                });
-
-                // Temporarily disable saving assistant message
-                /*
-                await saveMessages({
-                  messages: [
-                    {
-                      id: assistantId,
-                      chatId: id,
-                      role: assistantMessage.role,
-                      parts: assistantMessage.parts,
-                      attachments:
-                        assistantMessage.experimental_attachments ?? [],
-                      createdAt: new Date(),
-                    },
-                  ],
-                });
-                */
-              } catch (_) {
-                console.error('Failed to save chat');
-              }
-            // }
+            console.timeEnd('streamText');
+            console.log('Stream completed');
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
             functionId: 'stream-text',
           },
+          providerOptions,
         });
 
         result.consumeStream();
@@ -179,7 +138,8 @@ export async function POST(request: Request) {
           sendReasoning: true,
         });
       },
-      onError: () => {
+      onError: (error) => {
+        console.error('Error in dataStream:', error);
         return 'Oops, an error occurred!';
       },
     });
@@ -192,12 +152,16 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  console.log('DELETE /api/chat: Request received');
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 
   if (!id) {
+    console.log('No ID provided in DELETE request');
     return new Response('Not Found', { status: 404 });
   }
+
+  console.log(`Deleting chat with ID: ${id}`);
 
   // const session = await auth();
   const session = { user: { id: 'temp-user-id' }, expires: 'temp-expires' }; // Temporarily disable auth
@@ -221,9 +185,11 @@ export async function DELETE(request: Request) {
     // Skip user ID check
 
     // await deleteChatById({ id }); // Temporarily disable delete
+    console.log(`Successfully processed delete for chat ID: ${id}`);
 
     return new Response('Chat deleted', { status: 200 });
   } catch (error) {
+    console.error('Error in DELETE /api/chat:', error);
     return new Response('An error occurred while processing your request!', {
       status: 500,
     });

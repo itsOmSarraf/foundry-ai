@@ -14,6 +14,9 @@ export default async function Page({
 }: {
   params: { id: string };
 }) {
+  // Extract and await params to fix the error
+  const id = params.id;
+  
   // const chat = await getChatById({ id });
   const chat = null; // Temporarily disable DB fetch
 
@@ -36,7 +39,7 @@ export default async function Page({
   */
 
   // const messagesFromDb = await getMessagesByChatId({
-  //   id: params.id, // Use params.id here
+  //   id: id, // Use id here instead of params.id
   // });
   const messagesFromDb: DBMessage[] = []; // Provide empty array
 
@@ -60,29 +63,29 @@ export default async function Page({
   return (
     <>
       <Chat
-        key={params.id} // Use key here
-        id={params.id} // Use params.id
+        key={id} // Use id here instead of params.id
+        id={id} // Use id here instead of params.id
         initialMessages={convertToUIMessages(messagesFromDb)} // Use converted empty array
         selectedChatModel={chatModelFromCookie?.value ?? DEFAULT_CHAT_MODEL}
         selectedVisibilityType={"private"} // Default to private
         isReadonly={false} // Default to false, removing session dependency
       />
-      <DataStreamHandler id={params.id} />
+      <DataStreamHandler id={id} />
     </>
   );
 
-  /* // Original logic with cookie check - commented out for simplicity
+  /* Original logic with cookie check - commented out for simplicity
   if (!chatModelFromCookie) {
     return (
       <>
         <Chat
-          id={params.id} // Use params.id
+          id={id}
           initialMessages={convertToUIMessages(messagesFromDb)}
           selectedChatModel={DEFAULT_CHAT_MODEL}
-          selectedVisibilityType={'private'} // Default to private
-          isReadonly={false} // Default to false
+          selectedVisibilityType={'private'}
+          isReadonly={false}
         />
-        <DataStreamHandler id={params.id} />
+        <DataStreamHandler id={id} />
       </>
     );
   }
@@ -90,13 +93,13 @@ export default async function Page({
   return (
     <>
       <Chat
-        id={params.id} // Use params.id
+        id={id}
         initialMessages={convertToUIMessages(messagesFromDb)}
         selectedChatModel={chatModelFromCookie.value}
-        selectedVisibilityType={'private'} // Default to private
-        isReadonly={false} // Default to false
+        selectedVisibilityType={'private'}
+        isReadonly={false}
       />
-      <DataStreamHandler id={params.id} />
+      <DataStreamHandler id={id} />
     </>
   );
   */

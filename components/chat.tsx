@@ -16,6 +16,14 @@ import { toast } from 'sonner';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
 
+// Extended error type for API errors
+interface APIError extends Error {
+  response?: {
+    body?: ReadableStream<Uint8Array>;
+    status?: number;
+  };
+}
+
 export function Chat({
   id,
   initialMessages,
@@ -41,6 +49,7 @@ export function Chat({
     status,
     stop,
     reload,
+    error,
   } = useChat({
     id,
     body: { id, selectedChatModel: selectedChatModel },
@@ -51,10 +60,39 @@ export function Chat({
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
-    onError: () => {
-      toast.error('An error occurred, please try again!');
+    onError: (error) => {
+      console.error('Chat API error:', error);
+      
+      // Try to parse the response if it's a valid JSON
+      const apiError = error as APIError;
+      if (apiError.response && apiError.response.body) {
+        try {
+          const reader = apiError.response.body.getReader();
+          reader.read().then(({ value }) => {
+            const text = new TextDecoder().decode(value);
+            try {
+              const data = JSON.parse(text);
+              console.error('API error details:', data);
+              toast.error(`Error: ${data.message || 'Unknown error occurred'}`);
+            } catch (e) {
+              console.error('Non-JSON response:', text);
+              toast.error(`Error: ${text.substring(0, 100)}`);
+            }
+          });
+        } catch (readError) {
+          console.error('Error reading response:', readError);
+          toast.error('An error occurred while processing the response');
+        }
+      } else {
+        toast.error('An error occurred, please try again!');
+      }
     },
   });
+
+  // Display error banner if there's an error
+  if (error) {
+    console.error('Error state from useChat:', error);
+  }
 
   const { data: votes } = useSWR<Array<Vote>>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
@@ -73,6 +111,19 @@ export function Chat({
           selectedVisibilityType={selectedVisibilityType}
           isReadonly={isReadonly}
         />
+        
+        {error && (
+          <div className="mx-auto w-full md:max-w-3xl p-4 my-2 bg-red-100 text-red-800 rounded-md">
+            <p className="font-medium">Error occurred</p>
+            <p className="text-sm">{error.message || 'Failed to communicate with the AI'}</p>
+            <button 
+              onClick={() => reload()} 
+              className="mt-2 px-3 py-1 bg-red-200 rounded-md text-sm hover:bg-red-300"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
         <Messages
           chatId={id}
