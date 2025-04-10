@@ -69,6 +69,44 @@ export async function POST(request: Request) {
       return new Response('No user message found', { status: 400 });
     }
 
+    // Check if the message contains enhanced input data
+    let enhancedUserMessage = { ...userMessage };
+    const lastTextPart = userMessage.parts.find(part => part.type === 'text');
+    
+    if (lastTextPart && (lastTextPart as any).data?.enhancedInput) {
+      // Check if profile data exists
+      const hasProfileData = !!(lastTextPart as any).data?.hasProfileData;
+      
+      console.log(`Profile data status: ${hasProfileData ? 'PRESENT' : 'MISSING'}`);
+      if (hasProfileData) {
+        console.log("Profile text sample:", (lastTextPart as any).data?.profileText?.substring(0, 100) + '...');
+      }
+      
+      // Replace the text with the enhanced input that includes profile data
+      enhancedUserMessage = {
+        ...userMessage,
+        parts: userMessage.parts.map(part => {
+          if (part.type === 'text') {
+            return {
+              ...part,
+              // Use enhanced input text for AI processing
+              text: (part as any).data.enhancedInput,
+              // Preserve the original data for reference
+              data: {
+                ...(part as any).data,
+                isEnhanced: true
+              }
+            };
+          }
+          return part;
+        })
+      };
+      
+      console.log('Enhanced user message with profile data');
+    } else {
+      console.log('No enhanced input data found in message');
+    }
+
     console.log('User message:', JSON.stringify({
       id: userMessage.id,
       parts: userMessage.parts.map(part => 
@@ -77,6 +115,11 @@ export async function POST(request: Request) {
           { type: part.type }
       ),
     }));
+
+    // Use the enhanced message for the rest of the processing
+    const modifiedMessages = messages.map(msg => 
+      msg.id === userMessage.id ? enhancedUserMessage : msg
+    );
 
     // Configure provider options based on model
     const providerOptions: { google?: GoogleGenerativeAIProviderOptions } = {};
@@ -99,7 +142,7 @@ export async function POST(request: Request) {
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel }),
-          messages,
+          messages: modifiedMessages,
           maxSteps: 5,
           experimental_activeTools:
             selectedChatModel === 'chat-model-reasoning'

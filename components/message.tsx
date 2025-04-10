@@ -19,6 +19,7 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import { UseChatHelpers } from '@ai-sdk/react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const PurePreviewMessage = ({
   chatId,
@@ -38,6 +39,7 @@ const PurePreviewMessage = ({
   isReadonly: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [showProfileData, setShowProfileData] = useState(false);
 
   return (
     <AnimatePresence>
@@ -123,7 +125,57 @@ const PurePreviewMessage = ({
                             message.role === 'user',
                         })}
                       >
-                        <Markdown>{part.text}</Markdown>
+                        {message.role === 'user' && part.type === 'text' ? (
+                          <>
+                            {/* Check if profile data is available using the hasProfileData flag */}
+                            {(part as any).data?.hasProfileData ? (
+                              <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
+                                <div className="font-bold mb-1 flex items-center gap-1">
+                                  <span>📋</span> FOUNDER PROFILE
+                                </div>
+                                <div className="whitespace-pre-wrap">
+                                  {(part as any).data.profileText}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
+                                <div className="font-bold mb-1 flex items-center gap-1">
+                                  <span>⚠️</span> NO PROFILE DATA
+                                </div>
+                                <div>
+                                  Complete your profile in the <a href="/onboarding" className="underline hover:text-primary-foreground/80">onboarding section</a> to personalize responses
+                                </div>
+                              </div>
+                            )}
+                            
+                            <Markdown>{(part as any).data?.originalInput || part.text}</Markdown>
+                            
+                            {/* Profile data dropdown for JSON */}
+                            {(part as any).data?.onboardingData && Object.keys((part as any).data.onboardingData).length > 0 && (
+                              <div className="mt-2 text-xs">
+                                <div 
+                                  className="flex items-center gap-1 cursor-pointer text-primary-foreground/70 hover:text-primary-foreground"
+                                  onClick={() => setShowProfileData(!showProfileData)}
+                                >
+                                  {showProfileData ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                  <span>
+                                    {showProfileData ? "Hide raw JSON data" : "Show raw JSON data"}
+                                  </span>
+                                </div>
+                                
+                                {showProfileData && (
+                                  <div className="mt-2 p-2 bg-black/10 rounded text-primary-foreground/80 max-h-48 overflow-y-auto">
+                                    <pre className="text-xs whitespace-pre-wrap">
+                                      {JSON.stringify((part as any).data.onboardingData, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <Markdown>{part.text}</Markdown>
+                        )}
                       </div>
                     </div>
                   );
@@ -248,9 +300,9 @@ export const ThinkingMessage = () => {
   return (
     <motion.div
       data-testid="message-assistant-loading"
-      className="w-full mx-auto max-w-3xl px-4 group/message "
+      className="w-full mx-auto max-w-3xl px-4 group/message"
       initial={{ y: 5, opacity: 0 }}
-      animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
+      animate={{ y: 0, opacity: 1, transition: { delay: 0.5 } }}
       data-role={role}
     >
       <div
@@ -261,13 +313,18 @@ export const ThinkingMessage = () => {
           },
         )}
       >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
+        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
+          <div className="translate-y-px">
+            <SparklesIcon size={14} />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
+            <div className="flex gap-2 items-center">
+              <span className="animate-pulse">💡</span>
+              <span>Analyzing your startup question...</span>
+            </div>
           </div>
         </div>
       </div>

@@ -106,8 +106,73 @@ function PureMultimodalInput({
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
 
+    // Get onboarding data to include in the message
+    let onboardingData = {};
+    try {
+      const storedData = localStorage.getItem("onboardingData");
+      if (storedData) {
+        onboardingData = JSON.parse(storedData);
+        console.log("Retrieved onboarding data:", onboardingData);
+      } else {
+        console.log("No onboarding data found in localStorage");
+      }
+    } catch (error) {
+      console.error("Error loading onboarding data:", error);
+    }
+
+    // Create a readable text version of the profile data
+    const profileText = Object.entries(onboardingData)
+      .filter(([key, value]) => {
+        return value !== undefined && 
+               value !== null && 
+               value !== "" && 
+               !(Array.isArray(value) && value.length === 0);
+      })
+      .map(([key, value]) => {
+        const formattedKey = key
+          .replace(/_/g, ' ')
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+        
+        if (Array.isArray(value)) {
+          return `${formattedKey}: ${value.join(', ')}`;
+        } else if (typeof value === 'boolean') {
+          return `${formattedKey}: ${value ? 'Yes' : 'No'}`;
+        } else if (value) {
+          return `${formattedKey}: ${value}`;
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    console.log("Generated profile text:", profileText);
+
+    // Create a modified message that includes the onboarding data context
+    const userInput = input.trim();
+    const contextEnhancedInput = profileText ? 
+      `
+------- FOUNDER PROFILE DATA -------
+${profileText}
+-----------------------------------
+
+${userInput}
+` : userInput;
+
+    // Use the original input for the UI but send the enhanced input to the AI
+    setInput("");
+    
+    // Submit the form with the enhanced input but keep the UI showing the original
     handleSubmit(undefined, {
       experimental_attachments: attachments,
+      data: { 
+        originalInput: userInput, 
+        enhancedInput: contextEnhancedInput, 
+        onboardingData,
+        profileText,
+        hasProfileData: !!profileText
+      }
     });
 
     setAttachments([]);
@@ -124,6 +189,8 @@ function PureMultimodalInput({
     setLocalStorageInput,
     width,
     chatId,
+    input,
+    setInput
   ]);
 
   const uploadFile = async (file: File) => {
@@ -222,7 +289,7 @@ function PureMultimodalInput({
       <Textarea
         data-testid="multimodal-input"
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder="Ask me anything about your startup... e.g. 'What government schemes support AI startups in India?'"
         value={input}
         onChange={handleInput}
         className={cx(

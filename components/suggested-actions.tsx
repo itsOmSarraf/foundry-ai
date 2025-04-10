@@ -13,24 +13,34 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: '💡 Validate my idea',
+      label: 'for a subscription-based grocery delivery app',
+      action: 'Can you help me validate my idea for a subscription-based grocery delivery app? What are the key things I should consider?',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: '🧠 Find similar startups',
+      label: 'in the mental health tech space',
+      action: 'Show me similar startups in the mental health tech space and analyze their business models',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: '📊 Generate',
+      label: 'profit projections for my SaaS startup',
+      action: 'Help me create a basic profit projection for my SaaS startup in the first 2 years',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: '🤝 Help me find',
+      label: 'a technical co-founder',
+      action: 'What should I look for in a technical co-founder? How can I attract the right person?',
+    },
+    {
+      title: '💰 List investors',
+      label: 'for HealthTech startups in India',
+      action: 'Can you provide a list of investors and VCs focusing on HealthTech startups in India?',
+    },
+    {
+      title: '📑 Explain legal requirements',
+      label: 'for launching a fintech startup',
+      action: 'What are the main legal requirements and regulations for launching a fintech startup?',
     },
   ];
 
@@ -46,7 +56,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
           exit={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.05 * index }}
           key={`suggested-action-${suggestedAction.title}-${index}`}
-          className={index > 1 ? 'hidden sm:block' : 'block'}
+          className={index > 3 ? 'hidden sm:block' : 'block'}
         >
           <Button
             variant="ghost"
@@ -58,7 +68,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
                 content: suggestedAction.action,
               });
             }}
-            className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
+            className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start hover:bg-muted/50"
           >
             <span className="font-medium">{suggestedAction.title}</span>
             <span className="text-muted-foreground">

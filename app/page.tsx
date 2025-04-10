@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
@@ -9,6 +10,12 @@ import Marquee from "react-fast-marquee"
 const MotionCard = motion(Card);
 
 export default function HomePage() {
+  const router = useRouter();
+
+  const handleStartChat = () => {
+    const newChatId = crypto.randomUUID();
+    router.push(`/chat/${newChatId}`);
+  };
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -78,8 +85,8 @@ export default function HomePage() {
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 0.6, delay: 1.0 }}
           >
-            <Button size="lg" className="text-lg px-8 py-6 rounded-full">
-              <Link href="/onboarding">Start Building</Link>
+            <Button size="lg" className="text-lg px-8 py-6 rounded-full" onClick={handleStartChat}>
+              Start Building
             </Button>
           </motion.div>
         </div>
@@ -442,8 +449,8 @@ export default function HomePage() {
             No sign-up required. Start chatting with your AI co-pilot today and take your first step toward startup success.
           </motion.p>
           <motion.div variants={fadeInUp}>
-            <Button size="lg" className="text-lg px-8 py-6 rounded-full">
-              <Link href="/onboarding">Try the AI Co-Pilot</Link>
+            <Button size="lg" className="text-lg px-8 py-6 rounded-full" onClick={handleStartChat}>
+              Try the AI Co-Pilot
             </Button>
           </motion.div>
         </div>
