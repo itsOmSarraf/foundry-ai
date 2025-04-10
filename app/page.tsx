@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
+import Marquee from "react-fast-marquee"
 
 const MotionCard = motion(Card);
 
@@ -153,7 +154,8 @@ export default function HomePage() {
 
       {/* Use Cases */}
       <motion.section
-        className="py-20 px-4 bg-muted/50" id="use-cases"
+        className="py-20 px-4 bg-muted/50 overflow-hidden"
+        id="use-cases"
         initial="initial"
         whileInView="animate"
         variants={fadeInUp}
@@ -163,36 +165,26 @@ export default function HomePage() {
           <motion.h2 className="text-3xl md:text-4xl font-bold text-center mb-16" variants={fadeInUp}>
             What You Can Do
           </motion.h2>
-          <motion.div
-            className="grid md:grid-cols-3 gap-6"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {[
-              "Validate your startup idea",
-              "Analyze competitors",
-              "Discover local investors",
-              "Build a business model",
-              "Find co-founders",
-              "Understand legal requirements",
-              "Explore market fit",
-              "Get government scheme suggestions",
-              "Generate profit projections"
-            ].map((useCase, i) => (
-              <MotionCard
-                key={i}
-                className="border-none shadow-md h-full flex items-center justify-center p-6 bg-background/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
-                variants={staggerItem}
-                whileHover={{ scale: 1.05, y: -5 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <p className="text-center font-medium">{useCase}</p>
-              </MotionCard>
-            ))}
-          </motion.div>
+          <Marquee pauseOnHover speed={50} gradient={false}>
+            <div className="space-x-6 py-4">
+              {[
+                "Validate your startup idea",
+                "Analyze competitors",
+                "Discover local investors",
+                "Build a business model",
+                "Find co-founders",
+                "Understand legal requirements",
+                "Explore market fit",
+                "Get government scheme suggestions",
+                "Generate profit projections"
+              ].map((useCase, i) => (
+                <div key={i} className="inline-block px-6 py-3 bg-background/80 rounded-full shadow-md border border-border">
+                   <p className="text-center font-medium">{useCase}</p>
+                </div>
+              ))}
+              <div className="w-6 inline-block"></div>
+            </div>
+          </Marquee>
         </div>
       </motion.section>
 
