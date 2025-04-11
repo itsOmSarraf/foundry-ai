@@ -19,6 +19,8 @@ import CrunchbaseDisplay from './crunchbase/CrunchbaseDisplay';
 import PitchBookDisplay from './pitchbook/PitchBookDisplay';
 import TracxnDisplay from "./tracxn/TracxnDisplay";
 import FoundersDisplay from "./founders/FoundersDisplay";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LinkedInSkeleton,
   YouTubeSkeleton,
@@ -855,35 +857,71 @@ export default function CompanyResearcher() {
     }
   };
 
+  // Animation variants
+  const fadeInUp = {
+    initial: { opacity: 0, y: 60 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const staggerItem = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
     <div className="w-full max-w-5xl p-6 z-10 mb-20 mt-6">
-      <h1 className="md:text-6xl text-4xl pb-5 font-medium opacity-0 animate-fade-up [animation-delay:200ms]">
-        <span className="text-brand-default"> Company </span>
-        Researcher
-      </h1>
+      <motion.h1 
+        className="md:text-6xl text-4xl pb-5 font-medium bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        Company Researcher
+      </motion.h1>
 
-      <p className="text-black mb-12 opacity-0 animate-fade-up [animation-delay:400ms]">
+      <motion.p 
+        className="text-xl text-muted-foreground mb-12"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
         Enter a company URL for detailed research info. Instantly know any company inside out.
-      </p>
+      </motion.p>
 
-      <form onSubmit={handleResearch} className="space-y-6 mb-20">
+      <motion.form 
+        onSubmit={handleResearch} 
+        className="space-y-6 mb-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
         <input
           value={companyUrl}
           onChange={(e) => setCompanyUrl(e.target.value)}
           placeholder="Enter Company URL (e.g., example.com)"
-          className="w-full bg-white p-3 border box-border outline-none rounded-sm ring-2 ring-brand-default resize-none opacity-0 animate-fade-up [animation-delay:600ms]"
+          className="w-full bg-card p-3 border border-border box-border outline-none rounded-md resize-none ring-2 ring-primary/20 focus:ring-primary/50 transition-all"
         />
         <button
           type="submit"
-          className={`w-full text-white font-semibold px-2 py-2 rounded-sm transition-opacity opacity-0 animate-fade-up [animation-delay:800ms] min-h-[50px] ${isGenerating ? 'bg-gray-400' : 'bg-brand-default ring-2 ring-brand-default'
-            } transition-colors`}
+          className={`w-full text-white font-semibold px-2 py-3 rounded-md transition-all min-h-[50px] ${isGenerating ? 'bg-muted' : 'bg-primary hover:bg-primary/90'}`}
           disabled={isGenerating}
         >
           {isGenerating ? 'Researching...' : 'Research Now'}
         </button>
 
-        <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4 opacity-0 animate-fade-up [animation-delay:1000ms]">
-          <span className="text-gray-800">Powered by</span>
+        <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4">
+          <span className="text-muted-foreground">Powered by</span>
           <a
             href="https://exa.ai"
             target="_blank"
@@ -893,220 +931,336 @@ export default function CompanyResearcher() {
             <img src="/exa_logo.png" alt="Exa Logo" className="h-6 sm:h-7 object-contain" />
           </a>
         </div>
-      </form>
+      </motion.form>
 
       {Object.entries(errors).map(([key, message]) => (
-        <div key={key} className="mt-4 mb-4 p-3 bg-red-100 border border-red-400 text-red-700">
+        <motion.div 
+          key={key} 
+          className="mt-4 mb-4 p-3 bg-destructive/10 border border-destructive text-destructive rounded-md"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           {message}
-        </div>
+        </motion.div>
       ))}
 
       <div className="space-y-12">
         {/* Company Overview Section */}
 
-        <div className="space-y-16">
-          {(linkedinData || companySummary || founders || financialReport ||
-            fundingData || crunchbaseData || pitchbookData || tracxnData ||
-            wikipediaData) && (
-              <div className="flex items-center">
-                <h2 className="text-4xl font-medium">Company Overview</h2>
-              </div>
-            )}
+        {(linkedinData || companySummary || founders || financialReport ||
+          fundingData || crunchbaseData || pitchbookData || tracxnData ||
+          wikipediaData) && (
+            <motion.div 
+              className="flex items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="text-4xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">Company Overview</h2>
+            </motion.div>
+          )}
 
-          {/* {isGenerating && linkedinData === null ? (
-              <LinkedInSkeleton />
-            ) : linkedinData && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <LinkedInDisplay data={linkedinData} />
-              </div>
-            )} */}
-
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           {isGenerating && founders === null ? (
             <FoundersSkeleton />
           ) : founders && founders.length > 0 && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <FoundersDisplay founders={founders} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Founders</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FoundersDisplay founders={founders} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {linkedinData && parseCompanySize(processLinkedInText(linkedinData).companySize) >= 1000 && (
             isGenerating && financialReport === null ? (
               <FinancialSkeleton />
             ) : financialReport && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <FinancialReportDisplay report={financialReport} />
-              </div>
+              <motion.div variants={staggerItem}>
+                <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                  <CardHeader>
+                    <CardTitle>Financial Report</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <FinancialReportDisplay report={financialReport} />
+                  </CardContent>
+                </Card>
+              </motion.div>
             )
           )}
 
-          <div className="space-y-6">
-            {isGenerating && fundingData === null ? (
-              <FundingSkeleton />
-            ) : fundingData && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <FundingDisplay fundingData={fundingData} />
-              </div>
-            )}
+          {isGenerating && fundingData === null ? (
+            <FundingSkeleton />
+          ) : fundingData && (
+            <motion.div variants={staggerItem}>
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Funding</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FundingDisplay fundingData={fundingData} />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
-            {isGenerating && crunchbaseData === null ? (
-              <FundingSkeleton />
-            ) : crunchbaseData && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <CrunchbaseDisplay data={crunchbaseData} />
-              </div>
-            )}
+          {isGenerating && crunchbaseData === null ? (
+            <FundingSkeleton />
+          ) : crunchbaseData && (
+            <motion.div variants={staggerItem}>
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Crunchbase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CrunchbaseDisplay data={crunchbaseData} />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
-            {isGenerating && pitchbookData === null ? (
-              <FundingSkeleton />
-            ) : pitchbookData && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <PitchBookDisplay data={pitchbookData} />
-              </div>
-            )}
+          {isGenerating && pitchbookData === null ? (
+            <FundingSkeleton />
+          ) : pitchbookData && (
+            <motion.div variants={staggerItem}>
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>PitchBook</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PitchBookDisplay data={pitchbookData} />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
-            {isGenerating && tracxnData === null ? (
-              <FundingSkeleton />
-            ) : tracxnData && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <TracxnDisplay data={tracxnData} />
-              </div>
-            )}
-          </div>
+          {isGenerating && tracxnData === null ? (
+            <FundingSkeleton />
+          ) : tracxnData && (
+            <motion.div variants={staggerItem}>
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Tracxn</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TracxnDisplay data={tracxnData} />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
           {isGenerating && wikipediaData === null ? (
             <WikipediaSkeleton />
           ) : wikipediaData && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <WikipediaDisplay data={wikipediaData} websiteUrl={companyUrl} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Wikipedia</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <WikipediaDisplay data={wikipediaData} websiteUrl={companyUrl} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {isGenerating && competitors === null ? (
             <CompetitorsSkeleton />
           ) : competitors && competitors.length > 0 && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <CompetitorsDisplay competitors={competitors} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Competitors</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CompetitorsDisplay competitors={competitors} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {isGenerating && news === null ? (
             <NewsSkeleton />
           ) : news && news.length > 0 && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <NewsDisplay news={news} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Latest News</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <NewsDisplay news={news} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
 
         {/* Company Socials Section */}
-        <div className="space-y-16 pt-12">
+        {(twitterProfileText || youtubeVideos || tiktokData ||
+          redditPosts || githubUrl) && (
+            <motion.div 
+              className="flex items-center pt-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <h2 className="text-4xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">Company Socials</h2>
+            </motion.div>
+          )}
 
-          {(twitterProfileText || youtubeVideos || tiktokData ||
-            redditPosts || githubUrl) && (
-              <div className="flex items-center">
-                <h2 className="text-4xl font-medium">Company Socials</h2>
-              </div>
-            )}
-
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           {isGenerating && twitterProfileText === null ? (
             <TwitterSkeleton />
           ) : twitterProfileText && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <ProfileDisplay rawText={twitterProfileText.text} username={twitterProfileText.username} />
-              {recentTweets && <RecentTweetsDisplay tweets={recentTweets} />}
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Twitter Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProfileDisplay rawText={twitterProfileText.text} username={twitterProfileText.username} />
+                  {recentTweets && <RecentTweetsDisplay tweets={recentTweets} />}
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {isGenerating && youtubeVideos === null ? (
             <YouTubeSkeleton />
           ) : youtubeVideos && youtubeVideos.length > 0 && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <YoutubeVideosDisplay videos={youtubeVideos} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>YouTube Videos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <YoutubeVideosDisplay videos={youtubeVideos} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {isGenerating && redditPosts === null ? (
             <RedditSkeleton />
           ) : redditPosts && redditPosts.length > 0 && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <RedditDisplay posts={redditPosts} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>Reddit Posts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <RedditDisplay posts={redditPosts} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {isGenerating && tiktokData === null ? (
             <TikTokSkeleton />
           ) : tiktokData && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <TikTokDisplay data={tiktokData} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>TikTok Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TikTokDisplay data={tiktokData} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
 
           {isGenerating && githubUrl === null ? (
             <GitHubSkeleton />
           ) : githubUrl && (
-            <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-              <GitHubDisplay githubUrl={githubUrl} />
-            </div>
+            <motion.div variants={staggerItem} className="col-span-1 md:col-span-2">
+              <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle>GitHub</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <GitHubDisplay githubUrl={githubUrl} />
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
 
         {/* Summary and Mind Map Section */}
         {(isGenerating || companySummary) && (
-          <div className="space-y-8">
-            <div className="flex items-center">
-              <h2 className="text-3xl font-medium mt-6">Summary and Mind Map</h2>
-            </div>
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <motion.div className="flex items-center">
+              <h2 className="text-3xl font-medium mt-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">Summary and Mind Map</h2>
+            </motion.div>
 
-            {isGenerating && companySummary === null ? (
-              <CompanySummarySkeleton />
-            ) : companySummary && (
-              <div className="opacity-0 animate-fade-up [animation-delay:200ms]">
-                <CompanySummary summary={companySummary} />
-              </div>
-            )}
+            <motion.div 
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-1 gap-6"
+            >
+              {isGenerating && companySummary === null ? (
+                <CompanySummarySkeleton />
+              ) : companySummary && (
+                <motion.div variants={staggerItem}>
+                  <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                    <CardHeader>
+                      <CardTitle>Company Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CompanySummary summary={companySummary} />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
 
-            {isGenerating && companyMap === null ? (
-              <div className="hidden sm:block animate-pulse">
-                <div className="h-64 bg-secondary-darkest rounded-lg flex items-center justify-center">
-                  <p className="text-gray-400 text-md">Loading...</p>
+              {isGenerating && companyMap === null ? (
+                <div className="hidden sm:block animate-pulse">
+                  <Card className="border border-border shadow-md">
+                    <CardContent className="p-6">
+                      <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
+                        <p className="text-muted-foreground text-md">Loading...</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </div>
-            ) : companyMap && (
-              <div className="hidden sm:block opacity-0 animate-fade-up [animation-delay:200ms]">
-                <CompanyMindMap data={companyMap} />
-              </div>
-            )}
-          </div>
+              ) : companyMap && (
+                <motion.div variants={staggerItem} className="hidden sm:block">
+                  <Card className="border border-border shadow-md hover:shadow-lg transition-all">
+                    <CardHeader>
+                      <CardTitle>Mind Map</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CompanyMindMap data={companyMap} />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </motion.div>
+          </motion.div>
         )}
-
       </div>
-      <div className="flex-grow"></div>
-      {/* <footer className="fixed bottom-0 left-0 right-0 w-full py-4 bg-secondary-default border-t opacity-0 animate-fade-up [animation-delay:1200ms]">
-        <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-center sm:gap-6 px-4">
-          <Link
-            href="https://github.com/exa-labs/company-researcher"
-            target="_blank"
-            rel="origin"
-            className="text-gray-600 hover:underline cursor-pointer text-center"
-          >
-            Clone this open source project here
-          </Link>
-          <span className="text-gray-400 hidden sm:inline">|</span>
-          <Link
-            href="https://exa.ai"
-            target="_blank"
-            rel="origin"
-            className="hover:opacity-80 transition-opacity hidden sm:inline"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-gray-600 hover:text-gray-600 hover:underline">Powered by</span>
-              <img src="/exa_logo.png" alt="Exa Logo" className="h-5 object-contain" />
-            </div>
-          </Link>
-        </div>
-      </footer> */}
     </div>
   );
 }

@@ -39,7 +39,10 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted overflow-x-hidden relative">
+      {/* background grid design texture */}
+      <div className="absolute inset-0 -z-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_0px),linear-gradient(to_bottom,#80808012_1px,transparent_0px)] bg-[size:60px_60px]"></div>
+
       {/* Hero Section */}
       <motion.section
         className="relative flex flex-col items-center justify-center min-h-[90vh] px-4 py-16 text-center"
