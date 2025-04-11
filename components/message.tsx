@@ -160,7 +160,8 @@ const PurePreviewMessage = ({
                               </div>
                             ) : null}
                             
-                            <Markdown>{(part as any).data?.originalInput || part.text}</Markdown>
+                            {/* Check message.data for originalInput, casting to any */}
+                            <Markdown>{(message.data as any)?.originalInput || part.text}</Markdown>
                           </>
                         ) : (
                           <Markdown>{part.text}</Markdown>

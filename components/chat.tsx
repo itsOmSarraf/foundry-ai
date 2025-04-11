@@ -98,7 +98,6 @@ export function Chat({
     fetcher,
   );
 
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
   return (
@@ -142,8 +141,6 @@ export function Chat({
               append={append}
               status={status}
               stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
               messages={messages}
               setMessages={setMessages}
             />
@@ -159,8 +156,6 @@ export function Chat({
         append={append}
         status={status}
         stop={stop}
-        attachments={attachments}
-        setAttachments={setAttachments}
         messages={messages}
         setMessages={setMessages}
         reload={reload}
