@@ -42,7 +42,8 @@ export function Chat({
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
-  
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+
   const {
     messages,
     setMessages,
@@ -137,7 +138,6 @@ export function Chat({
               chatId={id}
               input={input}
               setInput={setInput}
-              handleSubmit={handleSubmit}
               append={append}
               status={status}
               stop={stop}
@@ -160,6 +160,8 @@ export function Chat({
         setMessages={setMessages}
         reload={reload}
         votes={votes}
+        attachments={attachments}
+        setAttachments={setAttachments}
         isReadonly={isReadonly}
       />
     </>
