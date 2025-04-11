@@ -131,33 +131,6 @@ const PurePreviewMessage = ({
                       >
                         {message.role === 'user' && part.type === 'text' ? (
                           <>
-                            {/* DEBUG: Display raw message data structure */}
-                            <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
-                              <div className="font-bold mb-1 flex items-center gap-1">
-                                <span>��</span> DEBUG INFO
-                                {isDevelopment && (
-                                  <button
-                                    className="ml-auto bg-black/20 px-1.5 py-0.5 rounded text-[10px] flex items-center gap-1"
-                                    onClick={() => {
-                                      // Get current store data
-                                      const storeData = useOnboardingStore.getState().data;
-                                      alert("Current store data: " + JSON.stringify(storeData, null, 2));
-                                    }}
-                                  >
-                                    <Bug size={10} /> Check Store
-                                  </button>
-                                )}
-                              </div>
-                              <div>
-                                <div>Has data obj: {(part as any).data ? "YES" : "NO"}</div>
-                                <div>hasProfileData: {String((part as any).data?.hasProfileData)}</div>
-                                <div>onboardingData: {(part as any).data?.onboardingData ? 
-                                  `YES (keys: ${Object.keys((part as any).data?.onboardingData || {}).join(', ')})` : 
-                                  "NO"}</div>
-                                <div>test_id: {(part as any).data?.test_id || "NONE"}</div>
-                              </div>
-                            </div>
-                          
                             {/* Check if profile data is available using the hasProfileData flag */}
                             {(part as any).data?.hasProfileData ? (
                               <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
@@ -185,16 +158,7 @@ const PurePreviewMessage = ({
                                   </div>
                                 )}
                               </div>
-                            ) : (
-                              <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
-                                <div className="font-bold mb-1 flex items-center gap-1">
-                                  <span>⚠️</span> NO PROFILE DATA
-                                </div>
-                                <div>
-                                  Complete your profile in the <a href="/onboarding" className="underline hover:text-primary-foreground/80">onboarding section</a> to personalize responses
-                                </div>
-                              </div>
-                            )}
+                            ) : null}
                             
                             <Markdown>{(part as any).data?.originalInput || part.text}</Markdown>
                           </>

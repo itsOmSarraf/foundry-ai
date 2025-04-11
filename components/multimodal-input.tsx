@@ -23,7 +23,6 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import { useOnboardingStore } from '@/lib/store/onboarding';
 
 // Define type for onboarding data (can be imported if defined elsewhere)
 interface OnboardingData { 
@@ -42,8 +41,6 @@ function PureMultimodalInput({
   setMessages,
   append,
   handleSubmit,
-  onboardingData,
-  hasOnboardingData,
   className,
 }: {
   chatId: string;
@@ -57,8 +54,6 @@ function PureMultimodalInput({
   setMessages: UseChatHelpers['setMessages'];
   append: UseChatHelpers['append'];
   handleSubmit: UseChatHelpers['handleSubmit'];
-  onboardingData: OnboardingData | null | undefined;
-  hasOnboardingData: boolean;
   className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -127,24 +122,14 @@ function PureMultimodalInput({
       test_id: string;
     };
 
-    if (hasOnboardingData && onboardingData) {
-      dataPayload = {
-        hasProfileData: true,
-        // Stringify the onboarding data for safe JSON transport
-        onboardingData: JSON.stringify(onboardingData),
-        originalInput: currentInput,
-        test_id: testId
-      };
-    } else {
-      dataPayload = {
-        hasProfileData: false,
-        originalInput: currentInput,
-        test_id: testId
-        // No onboardingData field when false
-      };
-    }
+    dataPayload = {
+      hasProfileData: false,
+      originalInput: currentInput,
+      test_id: testId
+      // No onboardingData field when false
+    };
     
-    console.log("MultimodalInput submitForm: Attaching data (onboardingData stringified if present):", dataPayload);
+    console.log("MultimodalInput submitForm: Attaching data:", dataPayload);
 
     setInput("");
     setLocalStorageInput(''); // Also clear local storage
@@ -169,8 +154,6 @@ function PureMultimodalInput({
     chatId,
     input,
     setInput,
-    onboardingData,
-    hasOnboardingData
   ]);
 
   const uploadFile = async (file: File) => {
@@ -317,9 +300,7 @@ function PureMultimodalInput({
 export const MultimodalInput = memo(
   PureMultimodalInput,
   (prevProps, nextProps) => {
-    if (prevProps.input !== nextProps.input) return false;
-    if (prevProps.status !== nextProps.status) return false;
-    if (!equal(prevProps.attachments, nextProps.attachments)) return false;
+    if (!equal(prevProps, nextProps)) return false;
 
     return true;
   },

@@ -16,10 +16,8 @@ import { Badge } from './ui/badge';
 
 function PureChatHeader({
   chatId,
-  hasOnboardingData = false,
 }: {
   chatId: string;
-  hasOnboardingData?: boolean;
 }) {
   const router = useRouter();
   const { open } = useSidebar();
@@ -32,37 +30,6 @@ function PureChatHeader({
 
       <div className="flex-1 flex items-center gap-2">
         <h1 className="text-lg font-semibold hidden md:block">Foundry.AI</h1>
-        
-        {!hasOnboardingData && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge 
-                variant="outline" 
-                className="border-amber-500 text-amber-500 flex items-center gap-1 cursor-pointer hover:bg-amber-50"
-                onClick={() => router.push('/onboarding')}
-              >
-                <AlertCircle className="h-3 w-3" />
-                <span className="hidden md:inline">Complete Profile</span>
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent>Complete your profile to get personalized responses</TooltipContent>
-          </Tooltip>
-        )}
-
-        {hasOnboardingData && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge 
-                variant="outline" 
-                className="border-green-500 text-green-500 flex items-center gap-1 hover:bg-green-50"
-              >
-                <Rocket className="h-3 w-3" />
-                <span className="hidden md:inline">Profile Active</span>
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent>Your founder profile data is included with every message</TooltipContent>
-          </Tooltip>
-        )}
       </div>
 
       {(!open || windowWidth < 768) && (
@@ -93,8 +60,8 @@ function PureChatHeader({
           >
             <Link href="/profile">
               <Avatar>
-                <AvatarFallback className={`${hasOnboardingData ? 'bg-primary' : 'bg-primary/10'}`}>
-                  <Rocket className={`h-5 w-5 ${hasOnboardingData ? 'text-primary-foreground' : 'text-primary'}`} />
+                <AvatarFallback className={'bg-primary'}>
+                  <Rocket className={'text-primary-foreground'} />
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -107,6 +74,5 @@ function PureChatHeader({
 }
 
 export const ChatHeader = memo(PureChatHeader, (prevProps, nextProps) => {
-  if (prevProps.hasOnboardingData !== nextProps.hasOnboardingData) return false;
   return true;
 });

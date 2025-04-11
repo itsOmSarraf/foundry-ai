@@ -15,7 +15,6 @@ import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
-import { useOnboardingStore } from '@/lib/store/onboarding';
 import { AlertCircle, Code } from 'lucide-react';
 
 // Determine if we're in development mode
@@ -43,45 +42,7 @@ export function Chat({
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
-  const [storeHydrated, setStoreHydrated] = useState(false);
-  // Get the entire store to ensure we have access to raw data
-  const onboardingStore = useOnboardingStore();
-  const onboardingData = useOnboardingStore(state => state.data);
-  const forceRefresh = useOnboardingStore(state => state.forceRefresh);
   
-  useEffect(() => {
-    // Force a check of the store data after a small delay to ensure hydration
-    const timer = setTimeout(() => {
-      setStoreHydrated(true);
-      // Force store refresh to ensure we have the latest data
-      forceRefresh();
-      // Log store data for debugging
-      const currentData = onboardingStore.data;
-      console.log("Store hydration check:", currentData);
-      
-      // If we have data stored in local storage but it's not in our state, force reload
-      if (!currentData || Object.keys(currentData).length === 0) {
-        try {
-          // Check local storage directly
-          const localStorageData = localStorage.getItem('onboarding-storage');
-          if (localStorageData) {
-            const parsedData = JSON.parse(localStorageData);
-            if (parsedData?.state?.data && Object.keys(parsedData.state.data).length > 0) {
-              console.log("Found data in localStorage but not in state, forcing refresh");
-              forceRefresh();
-            }
-          }
-        } catch (e) {
-          console.error("Error checking localStorage:", e);
-        }
-      }
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [onboardingStore, forceRefresh]);
-
-  const hasOnboardingData = storeHydrated && onboardingData && Object.keys(onboardingData).length > 0;
-
   const {
     messages,
     setMessages,
@@ -145,7 +106,6 @@ export function Chat({
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
           chatId={id}
-          hasOnboardingData={hasOnboardingData}
         />
         
         {error && (
@@ -158,18 +118,6 @@ export function Chat({
             >
               Try Again
             </button>
-          </div>
-        )}
-
-        {hasOnboardingData && (
-          <div className="mx-auto w-full md:max-w-3xl p-2 my-1 bg-blue-50 text-blue-800 rounded-md flex items-center gap-2">
-            <AlertCircle className="h-4 w-4" />
-            <p className="text-xs">Your founder profile data is automatically included with each message</p>
-            {isDevelopment && (
-              <span className="ml-auto bg-slate-200 px-1.5 py-0.5 rounded text-xs text-slate-700 flex items-center gap-1">
-                <Code className="h-3 w-3" /> Debug Mode
-              </span>
-            )}
           </div>
         )}
 
@@ -192,8 +140,6 @@ export function Chat({
               setInput={setInput}
               handleSubmit={handleSubmit}
               append={append}
-              onboardingData={onboardingData}
-              hasOnboardingData={hasOnboardingData}
               status={status}
               stop={stop}
               attachments={attachments}
@@ -211,8 +157,6 @@ export function Chat({
         setInput={setInput}
         handleSubmit={handleSubmit}
         append={append}
-        onboardingData={onboardingData}
-        hasOnboardingData={hasOnboardingData}
         status={status}
         stop={stop}
         attachments={attachments}
