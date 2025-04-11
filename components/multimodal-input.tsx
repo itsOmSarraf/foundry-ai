@@ -160,6 +160,7 @@ function PureMultimodalInput({
     input,
     setInput,
     messages,
+    onboardingData
   ]);
 
   return (

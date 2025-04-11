@@ -83,7 +83,7 @@ export default function ProfilePage() {
               <AlertCircle className="h-5 w-5 text-amber-500" />
               <CardTitle>Profile Not Found</CardTitle>
             </div>
-            <CardDescription>You haven't completed the onboarding process yet.</CardDescription>
+            <CardDescription>You haven&apos;t completed the onboarding process yet.</CardDescription>
           </CardHeader>
           <CardContent className="pb-2">
             <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-amber-800 text-sm">
@@ -170,7 +170,13 @@ export default function ProfilePage() {
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">
-                  {onboardingData.founder_name ? `${onboardingData.founder_name}'s Profile` : "Your Profile"}
+                  {onboardingData.founder_name ? (
+                    <>
+                      {onboardingData.founder_name}
+                      <span>{"\u2019"}</span>
+                      s Profile
+                    </>
+                  ) : "Your Profile"}
                 </CardTitle>
                 <CardDescription className="text-base">
                   {onboardingData.startup_name ? onboardingData.startup_name : "Startup Onboarding Information"}
@@ -191,7 +197,7 @@ export default function ProfilePage() {
             <HelpCircle className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">How this information is used:</p>
-              <p className="mt-1">This profile data is automatically included with your chat messages to provide personalized responses tailored to your startup's specific needs and stage.</p>
+              <p className="mt-1">This profile data is automatically included with your chat messages to provide personalized responses tailored to your startup&apos;s specific needs and stage.</p>
             </div>
           </div>
           

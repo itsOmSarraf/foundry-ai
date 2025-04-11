@@ -38,11 +38,14 @@ export default function YoutubeVideosDisplay({ videos }: YoutubeVideosDisplayPro
     return videos.filter(video => getVideoId(video.url) !== null);
   }, [videos]);
 
-  if (!validVideos || validVideos.length === 0) return null;
-
+  // Fetch video details only if there are valid videos
   useEffect(() => {
+    if (!validVideos || validVideos.length === 0) return;
+
     const fetchVideoDetails = async () => {
       const videoIds = validVideos.map(video => getVideoId(video.url)).filter(Boolean);
+      if (videoIds.length === 0) return; // Don't fetch if no IDs
+
       try {
         const response = await fetch(`/api/youtubevideodetails?ids=${videoIds.join(',')}`);
         if (response.ok) {
@@ -55,7 +58,10 @@ export default function YoutubeVideosDisplay({ videos }: YoutubeVideosDisplayPro
     };
 
     fetchVideoDetails();
-  }, [validVideos]);
+  }, [validVideos]); // Dependency array remains the same
+
+  // Return null if there are no valid videos to display
+  if (!validVideos || validVideos.length === 0) return null;
 
   const formatViewCount = (viewCount: string) => {
     const count = parseInt(viewCount);

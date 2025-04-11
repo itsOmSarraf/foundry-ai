@@ -7,11 +7,13 @@ import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
 import { Loader2 } from 'lucide-react';
 import { UIMessage } from 'ai';
 
-export default function ChatPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+type ChatPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function ChatPage({ params: paramsPromise }: ChatPageProps) {
+  const params = await paramsPromise;
+
   // Type assertion is safer than using React.use() in this context
   // Extract the chat ID from params
   const id = String(params.id);

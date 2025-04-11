@@ -109,7 +109,7 @@ This is a test message to verify profile data transmission.`
               <div className="text-amber-700 text-sm">
                 <p className="font-medium">How to test:</p>
                 <ol className="list-decimal pl-5 mt-1 space-y-1">
-                  <li>Click "Add Test Data" to create sample onboarding data</li>
+                  <li>Click &quot;Add Test Data&quot; to create sample onboarding data</li>
                   <li>Navigate to Profile or Onboarding pages to verify data appears</li>
                   <li>Return to this test page to ensure data is preserved across navigation</li>
                 </ol>
@@ -119,7 +119,7 @@ This is a test message to verify profile data transmission.`
             <div>
               <h3 className="text-lg font-medium mb-2">Current Store Data:</h3>
               <pre className="bg-muted p-4 rounded-md overflow-auto max-h-80">
-                {JSON.stringify(data, null, 2)}
+                <code>{JSON.stringify(data, null, 2)}</code>
               </pre>
             </div>
           </div>

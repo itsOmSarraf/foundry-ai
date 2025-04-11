@@ -210,7 +210,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div variants={fadeInUp}>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Chat-first Experience</h2>
-              <p className="text-xl mb-6">Building a startup doesn't have to be complicated. Simply chat with your AI co-pilot and get the guidance you need.</p>
+              <p className="text-xl mb-6">Building a startup doesn&apos;t have to be complicated. Simply chat with your AI co-pilot and get the guidance you need.</p>
               <motion.ul
                 className="space-y-4"
                 variants={staggerContainer}
@@ -250,7 +250,7 @@ export default function HomePage() {
                   viewport={{ once: true }}
                 >
                   <p className="text-sm text-muted-foreground">Foundry.AI</p>
-                  <p>Hi there! I'm your startup co-pilot. How can I help you today?</p>
+                  <p>Hi there! I&apos;m your startup co-pilot. How can I help you today?</p>
                 </motion.div>
                 <motion.div
                   className="bg-primary/10 p-4 rounded-lg self-end max-w-[80%]"
@@ -284,16 +284,16 @@ export default function HomePage() {
       </motion.section>
 
       {/* Testimonials */}
-      <motion.section
+      {/* <motion.section
         className="py-20 px-4 bg-muted/50" id="testimonials"
         initial="initial"
         whileInView="animate"
         variants={fadeInUp}
         viewport={{ once: true, amount: 0.2 }}
-      >
-        <div className="max-w-6xl mx-auto">
+      > */}
+        {/* <div className="max-w-6xl mx-auto">
           <motion.h2 className="text-3xl md:text-4xl font-bold text-center mb-16" variants={fadeInUp}>
-            Founder Testimonials
+            Success Stories
           </motion.h2>
           <motion.div
             className="grid md:grid-cols-3 gap-8"
@@ -304,19 +304,19 @@ export default function HomePage() {
           >
             {[
               {
-                quote: "Foundry.AI helped me validate my SaaS idea and find my first angel investor in just two weeks!",
-                name: "Sarah Chen",
-                role: "Founder, DataSync"
+                quote: "\"Foundry.AI helped us refine our pitch and connect with the right investors.\"",
+                name: "Rohan Patel",
+                title: "Founder, EcoSolutions"
               },
               {
-                quote: "The legal guidance saved me thousands in lawyer fees and the competitor analysis was spot on.",
-                name: "Michael Rodriguez",
-                role: "Co-founder, GreenDelivery"
+                quote: "\"The AI insights were invaluable for understanding our target market.\"",
+                name: "Priya Singh",
+                title: "CEO, Healthify"
               },
               {
-                quote: "I used Foundry.AI to find my technical co-founder and build a realistic business model. Game changer!",
-                name: "Aisha Johnson",
-                role: "CEO, HealthTrack"
+                quote: "Building a startup is a marathon, not a sprint. Foundry.AI is the partner you&apos;ll want.",
+                name: "Ananya Sharma",
+                title: "Co-founder, LearnSphere"
               }
             ].map((testimonial, i) => (
               <MotionCard
@@ -333,15 +333,15 @@ export default function HomePage() {
                     <p className="flex-grow mb-6 italic">{testimonial.quote}</p>
                     <div>
                       <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.title}</p>
                     </div>
                   </div>
                 </CardContent>
               </MotionCard>
             ))}
           </motion.div>
-        </div>
-      </motion.section>
+        </div> */}
+      {/* </motion.section> */}
 
       {/* Backed by Powerful Tools */}
       <motion.section
@@ -356,7 +356,7 @@ export default function HomePage() {
             Backed by Powerful Tools
           </motion.h2>
           <motion.p className="text-xl mb-10 max-w-2xl mx-auto" variants={fadeInUp}>
-            We've integrated the most advanced AI technologies to give you the best startup guidance.
+            We&apos;ve integrated the most advanced AI technologies to give you the best startup guidance.
           </motion.p>
           <motion.div
             className="flex flex-wrap justify-center gap-8"

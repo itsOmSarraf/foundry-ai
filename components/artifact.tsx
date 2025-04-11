@@ -321,19 +321,18 @@ function PureArtifact({
                   artifactStatus={artifact.status}
                 />
 
-                <form className="flex flex-row gap-2 relative items-end w-full px-4 pb-4">
+                <form
+                  className="flex flex-row gap-2 relative items-end w-full px-4 pb-4"
+                  onSubmit={handleSubmit}
+                >
                   <MultimodalInput
                     chatId={chatId}
                     input={input}
                     setInput={setInput}
-                    handleSubmit={handleSubmit}
                     status={status}
                     stop={stop}
-                    attachments={attachments}
-                    setAttachments={setAttachments}
                     messages={messages}
                     append={append}
-                    className="bg-background dark:bg-muted"
                     setMessages={setMessages}
                   />
                 </form>
