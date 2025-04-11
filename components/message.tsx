@@ -19,7 +19,11 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import { UseChatHelpers } from '@ai-sdk/react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Bug } from 'lucide-react';
+import { useOnboardingStore } from '@/lib/store/onboarding';
+
+// Check if in development
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const PurePreviewMessage = ({
   chatId,
@@ -127,15 +131,59 @@ const PurePreviewMessage = ({
                       >
                         {message.role === 'user' && part.type === 'text' ? (
                           <>
+                            {/* DEBUG: Display raw message data structure */}
+                            <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
+                              <div className="font-bold mb-1 flex items-center gap-1">
+                                <span>��</span> DEBUG INFO
+                                {isDevelopment && (
+                                  <button
+                                    className="ml-auto bg-black/20 px-1.5 py-0.5 rounded text-[10px] flex items-center gap-1"
+                                    onClick={() => {
+                                      // Get current store data
+                                      const storeData = useOnboardingStore.getState().data;
+                                      alert("Current store data: " + JSON.stringify(storeData, null, 2));
+                                    }}
+                                  >
+                                    <Bug size={10} /> Check Store
+                                  </button>
+                                )}
+                              </div>
+                              <div>
+                                <div>Has data obj: {(part as any).data ? "YES" : "NO"}</div>
+                                <div>hasProfileData: {String((part as any).data?.hasProfileData)}</div>
+                                <div>onboardingData: {(part as any).data?.onboardingData ? 
+                                  `YES (keys: ${Object.keys((part as any).data?.onboardingData || {}).join(', ')})` : 
+                                  "NO"}</div>
+                                <div>test_id: {(part as any).data?.test_id || "NONE"}</div>
+                              </div>
+                            </div>
+                          
                             {/* Check if profile data is available using the hasProfileData flag */}
                             {(part as any).data?.hasProfileData ? (
                               <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
                                 <div className="font-bold mb-1 flex items-center gap-1">
                                   <span>📋</span> FOUNDER PROFILE
+                                  <span className="ml-1 bg-primary-foreground/20 px-1 rounded text-[10px]">
+                                    {(part as any).data?.test_id || 'ID: N/A'}
+                                  </span>
                                 </div>
-                                <div className="whitespace-pre-wrap">
-                                  {(part as any).data.profileText}
+                                <div 
+                                  className="flex items-center gap-1 cursor-pointer text-primary-foreground/70 hover:text-primary-foreground"
+                                  onClick={() => setShowProfileData(!showProfileData)}
+                                >
+                                  {showProfileData ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                  <span>
+                                    {showProfileData ? "Hide profile data" : "Show profile data"}
+                                  </span>
                                 </div>
+                                
+                                {showProfileData && (
+                                  <div className="mt-2 p-2 bg-black/10 rounded text-primary-foreground/80 max-h-48 overflow-y-auto">
+                                    <pre className="text-xs whitespace-pre-wrap">
+                                      {JSON.stringify((part as any).data.onboardingData, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
                               </div>
                             ) : (
                               <div className="text-xs border-b border-primary-foreground/30 pb-2 mb-2 text-primary-foreground">
@@ -149,29 +197,6 @@ const PurePreviewMessage = ({
                             )}
                             
                             <Markdown>{(part as any).data?.originalInput || part.text}</Markdown>
-                            
-                            {/* Profile data dropdown for JSON */}
-                            {(part as any).data?.onboardingData && Object.keys((part as any).data.onboardingData).length > 0 && (
-                              <div className="mt-2 text-xs">
-                                <div 
-                                  className="flex items-center gap-1 cursor-pointer text-primary-foreground/70 hover:text-primary-foreground"
-                                  onClick={() => setShowProfileData(!showProfileData)}
-                                >
-                                  {showProfileData ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                  <span>
-                                    {showProfileData ? "Hide raw JSON data" : "Show raw JSON data"}
-                                  </span>
-                                </div>
-                                
-                                {showProfileData && (
-                                  <div className="mt-2 p-2 bg-black/10 rounded text-primary-foreground/80 max-h-48 overflow-y-auto">
-                                    <pre className="text-xs whitespace-pre-wrap">
-                                      {JSON.stringify((part as any).data.onboardingData, null, 2)}
-                                    </pre>
-                                  </div>
-                                )}
-                              </div>
-                            )}
                           </>
                         ) : (
                           <Markdown>{part.text}</Markdown>

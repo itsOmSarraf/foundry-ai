@@ -23,6 +23,12 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { useOnboardingStore } from '@/lib/store/onboarding';
+
+// Define type for onboarding data (can be imported if defined elsewhere)
+interface OnboardingData { 
+  [key: string]: any; 
+}
 
 function PureMultimodalInput({
   chatId,
@@ -36,6 +42,8 @@ function PureMultimodalInput({
   setMessages,
   append,
   handleSubmit,
+  onboardingData,
+  hasOnboardingData,
   className,
 }: {
   chatId: string;
@@ -49,11 +57,13 @@ function PureMultimodalInput({
   setMessages: UseChatHelpers['setMessages'];
   append: UseChatHelpers['append'];
   handleSubmit: UseChatHelpers['handleSubmit'];
+  onboardingData: OnboardingData | null | undefined;
+  hasOnboardingData: boolean;
   className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-
+  
   useEffect(() => {
     if (textareaRef.current) {
       adjustHeight();
@@ -106,78 +116,46 @@ function PureMultimodalInput({
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
 
-    // Get onboarding data to include in the message
-    let onboardingData = {};
-    try {
-      const storedData = localStorage.getItem("onboardingData");
-      if (storedData) {
-        onboardingData = JSON.parse(storedData);
-        console.log("Retrieved onboarding data:", onboardingData);
-      } else {
-        console.log("No onboarding data found in localStorage");
-      }
-    } catch (error) {
-      console.error("Error loading onboarding data:", error);
+    const currentInput = input.trim();
+    const testId = `submit-${Date.now()}`;
+
+    // Ensure data payload is JSON-serializable
+    let dataPayload: { 
+      hasProfileData: boolean;
+      onboardingData?: string; // Store as string if present
+      originalInput: string;
+      test_id: string;
+    };
+
+    if (hasOnboardingData && onboardingData) {
+      dataPayload = {
+        hasProfileData: true,
+        // Stringify the onboarding data for safe JSON transport
+        onboardingData: JSON.stringify(onboardingData),
+        originalInput: currentInput,
+        test_id: testId
+      };
+    } else {
+      dataPayload = {
+        hasProfileData: false,
+        originalInput: currentInput,
+        test_id: testId
+        // No onboardingData field when false
+      };
     }
-
-    // Create a readable text version of the profile data
-    const profileText = Object.entries(onboardingData)
-      .filter(([key, value]) => {
-        return value !== undefined && 
-               value !== null && 
-               value !== "" && 
-               !(Array.isArray(value) && value.length === 0);
-      })
-      .map(([key, value]) => {
-        const formattedKey = key
-          .replace(/_/g, ' ')
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-        
-        if (Array.isArray(value)) {
-          return `${formattedKey}: ${value.join(', ')}`;
-        } else if (typeof value === 'boolean') {
-          return `${formattedKey}: ${value ? 'Yes' : 'No'}`;
-        } else if (value) {
-          return `${formattedKey}: ${value}`;
-        }
-        return null;
-      })
-      .filter(Boolean)
-      .join('\n');
-
-    console.log("Generated profile text:", profileText);
-
-    // Create a modified message that includes the onboarding data context
-    const userInput = input.trim();
-    const contextEnhancedInput = profileText ? 
-      `
-------- FOUNDER PROFILE DATA -------
-${profileText}
------------------------------------
-
-${userInput}
-` : userInput;
-
-    // Use the original input for the UI but send the enhanced input to the AI
-    setInput("");
     
-    // Submit the form with the enhanced input but keep the UI showing the original
-    handleSubmit(undefined, {
-      experimental_attachments: attachments,
-      data: { 
-        originalInput: userInput, 
-        enhancedInput: contextEnhancedInput, 
-        onboardingData,
-        profileText,
-        hasProfileData: !!profileText
-      }
-    });
+    console.log("MultimodalInput submitForm: Attaching data (onboardingData stringified if present):", dataPayload);
 
-    setAttachments([]);
-    setLocalStorageInput('');
+    setInput("");
+    setLocalStorageInput(''); // Also clear local storage
     resetHeight();
+    setAttachments([]); // Clear attachments
+
+    // Submit the form using the passed handleSubmit prop
+    handleSubmit(undefined, { // Pass undefined for event, use options for data/attachments
+      experimental_attachments: attachments,
+      data: dataPayload // Pass the constructed payload
+    });
 
     if (width && width > 768) {
       textareaRef.current?.focus();
@@ -190,7 +168,9 @@ ${userInput}
     width,
     chatId,
     input,
-    setInput
+    setInput,
+    onboardingData,
+    hasOnboardingData
   ]);
 
   const uploadFile = async (file: File) => {

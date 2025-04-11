@@ -1,106 +1,39 @@
-import { cookies } from 'next/headers';
-import { notFound } from 'next/navigation';
+'use client';
 
-import { auth } from '@/app/(auth)/auth';
+import { Suspense } from 'react';
 import { Chat } from '@/components/chat';
-import { getChatById, getMessagesByChatId } from '@/lib/db/queries';
 import { DataStreamHandler } from '@/components/data-stream-handler';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
-import { DBMessage } from '@/lib/db/schema';
-import { Attachment, UIMessage } from 'ai';
+import { Loader2 } from 'lucide-react';
+import { UIMessage } from 'ai';
 
-export default async function Page({
+export default function ChatPage({
   params,
 }: {
   params: { id: string };
 }) {
-  // Extract and await params to fix the error
-  const id = params.id;
+  // Type assertion is safer than using React.use() in this context
+  // Extract the chat ID from params
+  const id = String(params.id);
   
-  // const chat = await getChatById({ id });
-  const chat = null; // Temporarily disable DB fetch
-
-  // if (!chat) {
-  //   notFound();
-  // }
-
-  // const session = await auth(); // Already commented out or handled elsewhere
-
-  /* // Temporarily disable visibility/ownership checks
-  if (chat?.visibility === 'private') {
-    if (!session || !session.user) {
-      return notFound();
-    }
-
-    if (session.user.id !== chat.userId) {
-      return notFound();
-    }
-  }
-  */
-
-  // const messagesFromDb = await getMessagesByChatId({
-  //   id: id, // Use id here instead of params.id
-  // });
-  const messagesFromDb: DBMessage[] = []; // Provide empty array
-
-  function convertToUIMessages(messages: Array<DBMessage>): Array<UIMessage> {
-    return messages.map((message) => ({
-      id: message.id,
-      parts: message.parts as UIMessage['parts'],
-      role: message.role as UIMessage['role'],
-      // Note: content will soon be deprecated in @ai-sdk/react
-      content: '',
-      createdAt: message.createdAt,
-      experimental_attachments:
-        (message.attachments as Array<Attachment>) ?? [],
-    }));
-  }
-
-  const cookieStore = await cookies();
-  const chatModelFromCookie = cookieStore.get('chat-model');
-
-  // Simplified return logic without conditional rendering based on cookie (can be added back later)
+  // Empty initial messages array for client-side rendering
+  const initialMessages: UIMessage[] = [];
+  
   return (
-    <>
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-[80vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
       <Chat
-        key={id} // Use id here instead of params.id
-        id={id} // Use id here instead of params.id
-        initialMessages={convertToUIMessages(messagesFromDb)} // Use converted empty array
-        selectedChatModel={chatModelFromCookie?.value ?? DEFAULT_CHAT_MODEL}
-        selectedVisibilityType={"private"} // Default to private
-        isReadonly={false} // Default to false, removing session dependency
-      />
-      <DataStreamHandler id={id} />
-    </>
-  );
-
-  /* Original logic with cookie check - commented out for simplicity
-  if (!chatModelFromCookie) {
-    return (
-      <>
-        <Chat
-          id={id}
-          initialMessages={convertToUIMessages(messagesFromDb)}
-          selectedChatModel={DEFAULT_CHAT_MODEL}
-          selectedVisibilityType={'private'}
-          isReadonly={false}
-        />
-        <DataStreamHandler id={id} />
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Chat
+        key={id}
         id={id}
-        initialMessages={convertToUIMessages(messagesFromDb)}
-        selectedChatModel={chatModelFromCookie.value}
-        selectedVisibilityType={'private'}
+        initialMessages={initialMessages}
+        selectedChatModel={DEFAULT_CHAT_MODEL}
+        selectedVisibilityType="private"
         isReadonly={false}
       />
       <DataStreamHandler id={id} />
-    </>
+    </Suspense>
   );
-  */
 }

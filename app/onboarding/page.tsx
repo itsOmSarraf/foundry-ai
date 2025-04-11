@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress"
 import { onboardingSchema, OnboardingField } from "@/lib/schema"
 import confetti from 'canvas-confetti'
 import { User, Rocket, MapPin, HelpCircle, Settings, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react"
+import { useOnboardingStore } from "@/lib/store/onboarding"
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -21,18 +22,16 @@ export default function OnboardingPage() {
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showLoader, setShowLoader] = useState(false)
+  
+  // Get data from Zustand store
+  const { data: storedData, setData, updateField } = useOnboardingStore()
 
   useEffect(() => {
-    // Load data from localStorage if exists
-    const savedData = localStorage.getItem("onboardingData")
-    if (savedData) {
-      try {
-        setFormData(JSON.parse(savedData))
-      } catch (e) {
-        console.error("Error loading saved data", e)
-      }
+    // Initialize form data from store
+    if (Object.keys(storedData).length > 0) {
+      setFormData(storedData)
     }
-  }, [])
+  }, [storedData])
 
   const totalSteps = onboardingSchema.steps.length
   const currentStep = onboardingSchema.steps[step]
@@ -40,6 +39,8 @@ export default function OnboardingPage() {
 
   const handleInputChange = (key: string, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
+    // Update field in store
+    updateField(key, value)
   }
 
   const handleMultiSelect = (key: string, value: string) => {
@@ -47,11 +48,14 @@ export default function OnboardingPage() {
       const currentValues = prev[key] || []
       const valueExists = currentValues.includes(value)
       
-      if (valueExists) {
-        return { ...prev, [key]: currentValues.filter((v: string) => v !== value) }
-      } else {
-        return { ...prev, [key]: [...currentValues, value] }
-      }
+      const newValues = valueExists 
+        ? currentValues.filter((v: string) => v !== value) 
+        : [...currentValues, value]
+      
+      // Update field in store
+      updateField(key, newValues)
+      
+      return { ...prev, [key]: newValues }
     })
   }
 
@@ -108,8 +112,8 @@ export default function OnboardingPage() {
     setShowLoader(true)
     
     try {
-      // Save data to localStorage
-      localStorage.setItem("onboardingData", JSON.stringify(formData))
+      // Save data to store (this will automatically save to localStorage)
+      setData(formData)
       
       // Fire confetti right away
       triggerConfetti()

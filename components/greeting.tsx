@@ -2,17 +2,19 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useOnboardingStore } from '@/lib/store/onboarding';
 
 export const Greeting = () => {
   const [founderName, setFounderName] = useState<string>("");
   const [startupIdea, setStartupIdea] = useState<string>("");
   const [hasOnboardingData, setHasOnboardingData] = useState<boolean>(false);
+  
+  // Get data from Zustand store
+  const { data } = useOnboardingStore();
 
   useEffect(() => {
     try {
-      const storedData = localStorage.getItem("onboardingData");
-      if (storedData) {
-        const data = JSON.parse(storedData);
+      if (data && Object.keys(data).length > 0) {
         setHasOnboardingData(true);
         if (data.founder_name) {
           setFounderName(data.founder_name);
@@ -24,7 +26,7 @@ export const Greeting = () => {
     } catch (error) {
       console.error("Error loading founder data:", error);
     }
-  }, []);
+  }, [data]);
 
   return (
     <div

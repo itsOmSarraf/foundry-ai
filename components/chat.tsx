@@ -1,8 +1,8 @@
 'use client';
 
 import type { Attachment, UIMessage } from 'ai';
-import { useChat } from '@ai-sdk/react';
-import { useState } from 'react';
+import { useChat, type Message, type CreateMessage } from '@ai-sdk/react';
+import { useState, useEffect } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
@@ -15,6 +15,11 @@ import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
+import { useOnboardingStore } from '@/lib/store/onboarding';
+import { AlertCircle, Code } from 'lucide-react';
+
+// Determine if we're in development mode
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 // Extended error type for API errors
 interface APIError extends Error {
@@ -38,6 +43,44 @@ export function Chat({
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
+  const [storeHydrated, setStoreHydrated] = useState(false);
+  // Get the entire store to ensure we have access to raw data
+  const onboardingStore = useOnboardingStore();
+  const onboardingData = useOnboardingStore(state => state.data);
+  const forceRefresh = useOnboardingStore(state => state.forceRefresh);
+  
+  useEffect(() => {
+    // Force a check of the store data after a small delay to ensure hydration
+    const timer = setTimeout(() => {
+      setStoreHydrated(true);
+      // Force store refresh to ensure we have the latest data
+      forceRefresh();
+      // Log store data for debugging
+      const currentData = onboardingStore.data;
+      console.log("Store hydration check:", currentData);
+      
+      // If we have data stored in local storage but it's not in our state, force reload
+      if (!currentData || Object.keys(currentData).length === 0) {
+        try {
+          // Check local storage directly
+          const localStorageData = localStorage.getItem('onboarding-storage');
+          if (localStorageData) {
+            const parsedData = JSON.parse(localStorageData);
+            if (parsedData?.state?.data && Object.keys(parsedData.state.data).length > 0) {
+              console.log("Found data in localStorage but not in state, forcing refresh");
+              forceRefresh();
+            }
+          }
+        } catch (e) {
+          console.error("Error checking localStorage:", e);
+        }
+      }
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [onboardingStore, forceRefresh]);
+
+  const hasOnboardingData = storeHydrated && onboardingData && Object.keys(onboardingData).length > 0;
 
   const {
     messages,
@@ -89,11 +132,6 @@ export function Chat({
     },
   });
 
-  // Display error banner if there's an error
-  if (error) {
-    console.error('Error state from useChat:', error);
-  }
-
   const { data: votes } = useSWR<Array<Vote>>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
     fetcher,
@@ -107,6 +145,7 @@ export function Chat({
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
           chatId={id}
+          hasOnboardingData={hasOnboardingData}
         />
         
         {error && (
@@ -119,6 +158,18 @@ export function Chat({
             >
               Try Again
             </button>
+          </div>
+        )}
+
+        {hasOnboardingData && (
+          <div className="mx-auto w-full md:max-w-3xl p-2 my-1 bg-blue-50 text-blue-800 rounded-md flex items-center gap-2">
+            <AlertCircle className="h-4 w-4" />
+            <p className="text-xs">Your founder profile data is automatically included with each message</p>
+            {isDevelopment && (
+              <span className="ml-auto bg-slate-200 px-1.5 py-0.5 rounded text-xs text-slate-700 flex items-center gap-1">
+                <Code className="h-3 w-3" /> Debug Mode
+              </span>
+            )}
           </div>
         )}
 
@@ -140,13 +191,15 @@ export function Chat({
               input={input}
               setInput={setInput}
               handleSubmit={handleSubmit}
+              append={append}
+              onboardingData={onboardingData}
+              hasOnboardingData={hasOnboardingData}
               status={status}
               stop={stop}
               attachments={attachments}
               setAttachments={setAttachments}
               messages={messages}
               setMessages={setMessages}
-              append={append}
             />
           )}
         </form>
@@ -157,11 +210,13 @@ export function Chat({
         input={input}
         setInput={setInput}
         handleSubmit={handleSubmit}
+        append={append}
+        onboardingData={onboardingData}
+        hasOnboardingData={hasOnboardingData}
         status={status}
         stop={stop}
         attachments={attachments}
         setAttachments={setAttachments}
-        append={append}
         messages={messages}
         setMessages={setMessages}
         reload={reload}

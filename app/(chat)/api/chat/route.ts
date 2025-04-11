@@ -79,7 +79,22 @@ export async function POST(request: Request) {
       
       console.log(`Profile data status: ${hasProfileData ? 'PRESENT' : 'MISSING'}`);
       if (hasProfileData) {
-        console.log("Profile text sample:", (lastTextPart as any).data?.profileText?.substring(0, 100) + '...');
+        // Log the onboarding data object if in development
+        if (!isProductionEnvironment) {
+          console.log("Full onboarding data:", (lastTextPart as any).data?.onboardingData);
+        }
+        
+        // Check if the enhanced input includes the JSON data marker
+        const enhancedInput = (lastTextPart as any).data?.enhancedInput || '';
+        if (enhancedInput.includes('this is all the details about the user ->')) {
+          console.log("Using JSON format for profile data");
+        }
+        
+        // Log test ID if available
+        const testId = (lastTextPart as any).data?.test_id;
+        if (testId) {
+          console.log(`Message test ID: ${testId}`);
+        }
       }
       
       // Replace the text with the enhanced input that includes profile data
@@ -102,9 +117,9 @@ export async function POST(request: Request) {
         })
       };
       
-      console.log('Enhanced user message with profile data');
+      console.log('Enhanced user message with founder profile data');
     } else {
-      console.log('No enhanced input data found in message');
+      console.log('No enhanced founder profile data found in message');
     }
 
     console.log('User message:', JSON.stringify({
