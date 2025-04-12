@@ -18,6 +18,8 @@ import {
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
+const SINGLE_CHAT_ID = "persistent-chat";
+
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
@@ -46,8 +48,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                   className="p-2 h-fit"
                   onClick={() => {
                     setOpenMobile(false);
-                    router.push('/');
-                    router.refresh();
+                    router.push(`/chat/${SINGLE_CHAT_ID}`);
                   }}
                 >
                   <PlusIcon />

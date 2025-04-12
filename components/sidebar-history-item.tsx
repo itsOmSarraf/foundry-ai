@@ -26,6 +26,8 @@ import {
 import { memo } from 'react';
 import { useChatVisibility } from '@/hooks/use-chat-visibility';
 
+const SINGLE_CHAT_ID = "persistent-chat";
+
 const PureChatItem = ({
   chat,
   isActive,
@@ -45,7 +47,7 @@ const PureChatItem = ({
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
-        <Link href={`/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
+        <Link href={`/chat/${SINGLE_CHAT_ID}`} onClick={() => setOpenMobile(false)}>
           <span>{chat.title}</span>
         </Link>
       </SidebarMenuButton>

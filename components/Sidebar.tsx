@@ -14,8 +14,15 @@ import {
   BookOpen, 
   MessageSquare,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Building2
 } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 
 const routes = [
   { name: 'Home', path: '/', icon: Home },
@@ -23,8 +30,11 @@ const routes = [
   { name: 'Tracker', path: '/tracker', icon: LineChart },
   { name: 'Quickstart', path: '/quickstart', icon: Rocket },
   { name: 'Resources', path: '/resources', icon: BookOpen },
+  { name: 'Company Research', path: '/exa', icon: Building2 },
   { name: 'Chat', path: '/chat', icon: MessageSquare }
 ];
+
+const SINGLE_CHAT_ID = "persistent-chat";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -45,12 +55,17 @@ export function Sidebar() {
     };
   }, []);
 
+  // Fix the Chat route path to use persistent chat ID
+  const getRoutePath = (path: string) => {
+    return path === '/chat' ? `/chat/${SINGLE_CHAT_ID}` : path;
+  };
+
   return (
     <>
       {/* Mobile menu button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-background border"
+        className="md:hidden fixed top-4 right-4 z-50 p-2 rounded-md bg-background border"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -58,71 +73,110 @@ export function Sidebar() {
       {/* Sidebar */}
       <div 
         className={cn(
-          "fixed inset-y-0 left-0 z-40 bg-background border-r transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 right-0 z-40 bg-background border-l transition-transform duration-300 ease-in-out",
           isOpen ? "w-64" : "w-16",
-          isMobile && !isOpen && "-translate-x-full",
+          isMobile && !isOpen && "translate-x-full",
           isMobile && isOpen && "translate-x-0",
           !isMobile && !isOpen && "translate-x-0"
         )}
       >
-        <div className="p-4 h-full flex flex-col">
-          <div className={cn("mb-8 flex items-center", isOpen ? "justify-between" : "justify-center")}>
-            {isOpen && <h2 className="text-xl font-bold">Coding Ninjas</h2>}
-            {isMobile ? (
-              isOpen && (
-                <button onClick={() => setIsOpen(false)} className="md:hidden">
-                  <X size={20} />
-                </button>
-              )
-            ) : (
-              <button 
-                onClick={() => setIsOpen(!isOpen)} 
-                className="p-1 rounded-md hover:bg-accent"
-              >
-                {isOpen ? <ChevronsLeft size={20} /> : <ChevronsRight size={20} />}
-              </button>
+        <TooltipProvider delayDuration={0}>
+          <div className="p-4 h-full flex flex-col">
+            <div className={cn("mb-8 flex items-center", isOpen ? "justify-between" : "justify-center")}>
+              {isOpen && <h2 className="text-xl font-bold">Coding Ninjas</h2>}
+              {isMobile ? (
+                isOpen && (
+                  <button onClick={() => setIsOpen(false)} className="md:hidden">
+                    <X size={20} />
+                  </button>
+                )
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      onClick={() => setIsOpen(!isOpen)} 
+                      className="p-1 rounded-md hover:bg-accent"
+                    >
+                      {isOpen ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    {isOpen ? 'Collapse' : 'Expand'}
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+            <nav className="space-y-2 flex-1">
+              {routes.map((route) => (
+                <div key={route.path}>
+                  {!isOpen ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link 
+                          href={getRoutePath(route.path)}
+                          onClick={() => isMobile && setIsOpen(false)}
+                          className={cn(
+                            "flex items-center rounded-md hover:bg-accent",
+                            "p-2 justify-center",
+                            (pathname === route.path || (route.path === '/chat' && pathname.startsWith('/chat'))) && 
+                              "bg-accent text-accent-foreground font-medium"
+                          )}
+                        >
+                          <route.icon className="h-4 w-4" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        {route.name}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Link 
+                      href={getRoutePath(route.path)}
+                      onClick={() => isMobile && setIsOpen(false)}
+                      className={cn(
+                        "flex items-center rounded-md hover:bg-accent",
+                        "px-3 py-2 text-sm",
+                        (pathname === route.path || (route.path === '/chat' && pathname.startsWith('/chat'))) && 
+                          "bg-accent text-accent-foreground font-medium"
+                      )}
+                    >
+                      <route.icon className="h-4 w-4 mr-2" />
+                      {route.name}
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </nav>
+            
+            {!isMobile && (
+              <div className="pt-4 border-t">
+                {!isOpen ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button 
+                        onClick={() => setIsOpen(!isOpen)} 
+                        className="flex items-center w-full rounded-md hover:bg-accent p-2 justify-center"
+                      >
+                        <ChevronsLeft className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      Expand sidebar
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <button 
+                    onClick={() => setIsOpen(!isOpen)} 
+                    className="flex items-center w-full rounded-md hover:bg-accent px-3 py-2 text-sm justify-between"
+                  >
+                    <span>Collapse</span>
+                    <ChevronsRight className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             )}
           </div>
-          <nav className="space-y-2 flex-1">
-            {routes.map((route) => (
-              <Link 
-                key={route.path} 
-                href={route.path}
-                onClick={() => isMobile && setIsOpen(false)}
-                className={cn(
-                  "flex items-center rounded-md hover:bg-accent",
-                  isOpen ? "px-3 py-2 text-sm" : "p-2 justify-center",
-                  pathname === route.path && "bg-accent text-accent-foreground font-medium"
-                )}
-                title={!isOpen ? route.name : undefined}
-              >
-                <route.icon className={cn("h-4 w-4", isOpen && "mr-2")} />
-                {isOpen && route.name}
-              </Link>
-            ))}
-          </nav>
-          
-          {!isMobile && (
-            <div className="pt-4 border-t">
-              <button 
-                onClick={() => setIsOpen(!isOpen)} 
-                className={cn(
-                  "flex items-center w-full rounded-md hover:bg-accent",
-                  isOpen ? "px-3 py-2 text-sm" : "p-2 justify-center"
-                )}
-              >
-                {isOpen ? (
-                  <>
-                    <ChevronsLeft className="h-4 w-4 mr-2" />
-                    Collapse
-                  </>
-                ) : (
-                  <ChevronsRight className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          )}
-        </div>
+        </TooltipProvider>
       </div>
       
       {/* Overlay to close sidebar on mobile */}

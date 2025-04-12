@@ -920,7 +920,7 @@ export default function CompanyResearcher() {
           {isGenerating ? 'Researching...' : 'Research Now'}
         </button>
 
-        <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4">
+        {/* <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4">
           <span className="text-muted-foreground">Powered by</span>
           <a
             href="https://exa.ai"
@@ -930,7 +930,7 @@ export default function CompanyResearcher() {
           >
             <img src="/exa_logo.png" alt="Exa Logo" className="h-6 sm:h-7 object-contain" />
           </a>
-        </div>
+        </div> */}
       </motion.form>
 
       {Object.entries(errors).map(([key, message]) => (

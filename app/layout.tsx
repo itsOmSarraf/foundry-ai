@@ -79,11 +79,11 @@ export default async function RootLayout({
           disableTransitionOnChange
         > */}
           <Toaster position="top-center" />
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 w-0 p-4 md:p-6 transition-all duration-300">
+          <div className="flex min-h-screen flex-col-reverse md:flex-row">
+            <main className="flex-1 w-full p-4 md:p-6 transition-all duration-300 md:pr-20">
               {children}
             </main>
+            <Sidebar />
           </div>
         {/* </ThemeProvider> */}
       </body>

@@ -19,6 +19,7 @@ import { AlertCircle, Code } from 'lucide-react';
 
 // Determine if we're in development mode
 const isDevelopment = process.env.NODE_ENV === 'development';
+const STORAGE_KEY = 'persistent-chat-messages';
 
 // Extended error type for API errors
 interface APIError extends Error {
@@ -43,6 +44,20 @@ export function Chat({
 }) {
   const { mutate } = useSWRConfig();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [localMessages, setLocalMessages] = useState<UIMessage[]>([]);
+
+  // Load messages from localStorage on initial render
+  useEffect(() => {
+    const storedMessages = localStorage.getItem(STORAGE_KEY);
+    if (storedMessages) {
+      try {
+        const parsedMessages = JSON.parse(storedMessages) as UIMessage[];
+        setLocalMessages(parsedMessages);
+      } catch (e) {
+        console.error('Failed to parse stored messages:', e);
+      }
+    }
+  }, []);
 
   const {
     messages,
@@ -58,7 +73,7 @@ export function Chat({
   } = useChat({
     id,
     body: { id, selectedChatModel: selectedChatModel },
-    initialMessages,
+    initialMessages: localMessages.length > 0 ? localMessages : initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
     generateId: generateUUID,
@@ -93,6 +108,13 @@ export function Chat({
       }
     },
   });
+
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const { data: votes } = useSWR<Array<Vote>>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,

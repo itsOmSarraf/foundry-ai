@@ -32,24 +32,25 @@ function PureChatHeader({
         <h1 className="text-lg font-semibold hidden md:block">Foundry.AI</h1>
       </div>
 
-      {(!open || windowWidth < 768) && (
+      {/* {(!open || windowWidth < 768) && (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="outline"
               className="order-2 md:order-1 md:px-2 px-2 md:h-fit"
               onClick={() => {
-                router.push('/');
-                router.refresh();
-              }}
-            >
-              <PlusIcon />
-              <span className="md:sr-only">New Chat</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>New Chat</TooltipContent>
-        </Tooltip>
-      )}
+        //         router.push('/');
+        //         router.refresh();
+        //       }}
+        //     >
+        //       <PlusIcon />
+        //       <span className="md:sr-only">New Chat</span>
+        //     </Button>
+        //   </TooltipTrigger>
+        //   <TooltipContent>New Chat</TooltipContent>
+        // </Tooltip>
+      
+      )} */}
 
       <Tooltip>
         <TooltipTrigger asChild>

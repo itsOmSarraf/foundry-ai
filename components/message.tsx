@@ -313,7 +313,7 @@ export const ThinkingMessage = () => {
           <div className="flex flex-col gap-4 text-muted-foreground">
             <div className="flex gap-2 items-center">
               <span className="animate-pulse">💡</span>
-              <span>Analyzing your startup question...</span>
+              <span>Analyzing your question...</span>
             </div>
           </div>
         </div>

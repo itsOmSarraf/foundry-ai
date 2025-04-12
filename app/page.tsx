@@ -8,13 +8,13 @@ import { motion } from "framer-motion"
 import Marquee from "react-fast-marquee"
 
 const MotionCard = motion(Card);
+const SINGLE_CHAT_ID = "persistent-chat";
 
 export default function HomePage() {
   const router = useRouter();
 
   const handleStartChat = () => {
-    const newChatId = crypto.randomUUID();
-    router.push(`/chat/${newChatId}`);
+    router.push(`/chat/${SINGLE_CHAT_ID}`);
   };
 
   const fadeInUp = {
