@@ -57,7 +57,7 @@ export default function TrackerPage() {
                   </ol>
                   
                   <p className="text-sm text-muted-foreground mt-4">
-                    Your progress is automatically saved in your browser's local storage. If you clear your browser data, your progress will be reset.
+                    Your progress is automatically saved in your browser&apos;s local storage. If you clear your browser data, your progress will be reset.
                   </p>
                 </CardContent>
               </Card>

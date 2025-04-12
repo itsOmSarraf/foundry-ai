@@ -53,7 +53,7 @@ export default function QuickstartPage() {
                   <h3 className="text-lg font-medium">How to use:</h3>
                   <ol className="list-decimal pl-6 space-y-1">
                     <li>Browse the available document types</li>
-                    <li>Click "Generate" to create a document using AI</li>
+                    <li>Click &quot;Generate&quot; to create a document using AI</li>
                     <li>View, edit, or download your generated documents</li>
                     <li>Use the document status tags to track your progress</li>
                   </ol>

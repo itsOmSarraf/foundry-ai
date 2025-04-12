@@ -2,6 +2,7 @@ import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Sidebar } from '@/components/Sidebar';
 
 import './globals.css';
 
@@ -69,7 +70,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased relative">
+      <body className="antialiased">
         <div className="fixed inset-0 -z-10 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_0px),linear-gradient(to_bottom,#80808012_1px,transparent_0px)] bg-[size:60px_60px] pointer-events-none"></div>
         {/* <ThemeProvider
           attribute="class"
@@ -78,7 +79,12 @@ export default async function RootLayout({
           disableTransitionOnChange
         > */}
           <Toaster position="top-center" />
-          {children}
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1 w-0 p-4 md:p-6 transition-all duration-300">
+              {children}
+            </main>
+          </div>
         {/* </ThemeProvider> */}
       </body>
     </html>
