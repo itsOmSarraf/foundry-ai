@@ -7,9 +7,10 @@ import { Sidebar } from '@/components/Sidebar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://chat.vercel.ai'),
-  title: 'Next.js Chatbot Template',
-  description: 'Next.js chatbot template using the AI SDK.',
+  metadataBase: new URL('https://foundry-ai.vercel.app'),
+  title: 'Foundry AI — Your AI Co-Pilot',
+  description:
+    'AI-powered co-pilot to help you ideate, validate, plan, and launch your startup faster.',
 };
 
 export const viewport = {
@@ -71,20 +72,20 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <div className="fixed inset-0 -z-10 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_0px),linear-gradient(to_bottom,#80808012_1px,transparent_0px)] bg-[size:60px_60px] pointer-events-none"></div>
+        <div className="fixed inset-0 -z-10 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_0px),linear-gradient(to_bottom,#80808012_1px,transparent_0px)] bg-[size:60px_60px] pointer-events-none" />
         {/* <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         > */}
-          <Toaster position="top-center" />
-          <div className="flex min-h-screen flex-col-reverse md:flex-row">
-            <main className="flex-1 w-full p-4 md:p-6 transition-all duration-300 md:pr-20">
-              {children}
-            </main>
-            <Sidebar />
-          </div>
+        <Toaster position="top-center" />
+        <div className="flex min-h-screen flex-col-reverse md:flex-row">
+          <main className="flex-1 w-full p-4 md:p-6 transition-all duration-300 md:pr-20">
+            {children}
+          </main>
+          <Sidebar />
+        </div>
         {/* </ThemeProvider> */}
       </body>
     </html>
