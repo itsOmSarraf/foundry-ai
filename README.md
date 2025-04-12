@@ -1,6 +1,5 @@
 
 # 🧠 Foundry AI — Your AI Co-Founder  
-> Deployed at: [https://foundry-ai.vercel.app](https://foundry-ai.vercel.app)
 
 Foundry AI is your **AI-powered co-founder** — here to help you ideate, validate, plan, and launch your startup faster. Whether you're brainstorming your next big idea, researching competitors, or tracking your venture’s progress, Foundry AI brings all the tools together — with the power of **Gemini** and **Exa.ai** under the hood.
 
