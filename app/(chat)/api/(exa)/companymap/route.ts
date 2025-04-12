@@ -4,7 +4,7 @@ import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 
-export const maxDuration = 300; // Increased to handle potentially complex requests
+export const maxDuration = 60; // Changed from 300 to comply with Vercel hobby plan limits
 
 export async function POST(req: NextRequest) {
 	try {
