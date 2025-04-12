@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -21,7 +21,12 @@ interface DocumentEditorProps {
   onSave: (id: string, content: string) => void;
 }
 
-export default function DocumentEditor({ document, isOpen, onClose, onSave }: DocumentEditorProps) {
+export default function DocumentEditor({
+  document,
+  isOpen,
+  onClose,
+  onSave,
+}: DocumentEditorProps) {
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [mode, setMode] = useState<'preview' | 'edit'>('preview');
@@ -35,7 +40,7 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
 
   const handleSave = async () => {
     if (!document) return;
-    
+
     setIsSaving(true);
     try {
       await onSave(document.id, content);
@@ -47,7 +52,7 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
 
   const handleCopy = async () => {
     if (!document) return;
-    
+
     try {
       await navigator.clipboard.writeText(content);
       setCopySuccess(true);
@@ -59,7 +64,7 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
 
   const handleDownload = () => {
     if (!document) return;
-    
+
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const downloadLink = window.document.createElement('a');
@@ -99,14 +104,12 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <DialogDescription>
-              {document.description}
-            </DialogDescription>
+            <DialogDescription>{document.description}</DialogDescription>
           </DialogHeader>
         </div>
 
-        <Tabs 
-          value={mode} 
+        <Tabs
+          value={mode}
           onValueChange={(value) => setMode(value as 'preview' | 'edit')}
           className="flex flex-col flex-1 overflow-hidden"
         >
@@ -115,21 +118,21 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
               <TabsTrigger value="preview">Preview</TabsTrigger>
               <TabsTrigger value="edit">Edit</TabsTrigger>
             </TabsList>
-            
+
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleCopy}
                 className="gap-1"
               >
                 <Copy className="h-3.5 w-3.5" />
                 {copySuccess ? 'Copied!' : 'Copy'}
               </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleDownload}
                 className="gap-1"
               >
@@ -140,31 +143,31 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
           </div>
 
           <div className="flex-1 overflow-hidden px-6 py-4">
-            <TabsContent 
-              value="preview" 
+            <TabsContent
+              value="preview"
               className="h-full flex-1 rounded-md border p-4 bg-background data-[state=active]:flex data-[state=active]:flex-col overflow-auto"
             >
-              <div 
-                className="prose dark:prose-invert max-w-none"
+              <div
+                className="max-w-none"
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
               />
             </TabsContent>
-            
-            <TabsContent 
-              value="edit" 
+
+            <TabsContent
+              value="edit"
               className="h-full flex flex-col data-[state=active]:flex"
             >
               <div className="flex-1 h-full flex flex-col">
-                <Textarea 
-                  value={content} 
+                <Textarea
+                  value={content}
                   onChange={(e) => setContent(e.target.value)}
                   className="flex-1 h-full min-h-[calc(100%-50px)] font-mono text-sm resize-none"
                   placeholder="Enter your document content here..."
                 />
-                
+
                 <div className="flex justify-end gap-2 pt-4">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setContent(document.content);
                       setMode('preview');
@@ -174,8 +177,8 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
                     <X className="h-3.5 w-3.5" />
                     Cancel
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={handleSave}
                     className="gap-1"
                     disabled={isSaving}
@@ -200,4 +203,4 @@ export default function DocumentEditor({ document, isOpen, onClose, onSave }: Do
       </DialogContent>
     </Dialog>
   );
-} 
+}
