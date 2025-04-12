@@ -1,11 +1,10 @@
 'use client';
 
-import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 
-export default function Layout({
+export default function ChatLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -29,10 +28,9 @@ export default function Layout({
         strategy="beforeInteractive"
       />
       <SidebarProvider defaultOpen={!isCollapsed}>
-        {/* <AppSidebar user={session?.user} /> */}
         <div className="fixed inset-0 -z-10 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_0px),linear-gradient(to_bottom,#80808012_1px,transparent_0px)] bg-[size:60px_60px] pointer-events-none"></div>
         <SidebarInset>{children}</SidebarInset>
       </SidebarProvider>
     </>
   );
-}
+} 
