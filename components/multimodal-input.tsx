@@ -100,7 +100,7 @@ function PureMultimodalInput({
   };
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
+    window.history.replaceState({}, '', '/chat/persistent-chat');
 
     const currentInput = input.trim();
     const testId = `submit-${Date.now()}`;

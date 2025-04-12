@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
-const SINGLE_CHAT_ID = "persistent-chat";
-
 export default function NewChatPage() {
   const router = useRouter();
   const [loadingCounter, setLoadingCounter] = useState(0);
@@ -16,9 +14,9 @@ export default function NewChatPage() {
       setLoadingCounter(prev => prev + 1);
     }, 1000);
 
-    // Redirect to the single persistent chat with a short delay
+    // Redirect to the hardcoded persistent chat with a short delay
     const redirectTimeout = setTimeout(() => {
-      router.replace(`/chat/${SINGLE_CHAT_ID}`);
+      router.replace('/chat/persistent-chat');
     }, 300);
 
     return () => {

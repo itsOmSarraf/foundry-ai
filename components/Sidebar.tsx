@@ -57,7 +57,7 @@ export function Sidebar() {
 
   // Fix the Chat route path to use persistent chat ID
   const getRoutePath = (path: string) => {
-    return path === '/chat' ? `/chat/${SINGLE_CHAT_ID}` : path;
+    return path === '/chat' ? '/chat/persistent-chat' : path;
   };
 
   return (

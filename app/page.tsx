@@ -14,7 +14,7 @@ export default function HomePage() {
   const router = useRouter();
 
   const handleStartChat = () => {
-    router.push(`/chat/${SINGLE_CHAT_ID}`);
+    router.push('/chat/persistent-chat');
   };
 
   const fadeInUp = {

@@ -48,7 +48,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                   className="p-2 h-fit"
                   onClick={() => {
                     setOpenMobile(false);
-                    router.push(`/chat/${SINGLE_CHAT_ID}`);
+                    router.push('/chat/persistent-chat');
                   }}
                 >
                   <PlusIcon />

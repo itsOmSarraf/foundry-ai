@@ -26,11 +26,11 @@ function PureChatHeader({
 
   return (
     <header className="flex sticky top-0 bg-background py-1.5 items-center px-4 md:px-4 gap-2 border-b">
-      <SidebarToggle />
+      {/* <SidebarToggle />
 
       <div className="flex-1 flex items-center gap-2">
         <h1 className="text-lg font-semibold hidden md:block">Foundry.AI</h1>
-      </div>
+      </div> */}
 
       {/* {(!open || windowWidth < 768) && (
         <Tooltip>
@@ -52,7 +52,7 @@ function PureChatHeader({
       
       )} */}
 
-      <Tooltip>
+      {/* <Tooltip>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
@@ -69,7 +69,7 @@ function PureChatHeader({
           </Button>
         </TooltipTrigger>
         <TooltipContent>Your Profile</TooltipContent>
-      </Tooltip>
+      </Tooltip> */}
     </header>
   );
 }

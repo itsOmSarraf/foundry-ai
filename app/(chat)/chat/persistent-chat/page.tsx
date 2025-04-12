@@ -6,26 +6,11 @@ import { DataStreamHandler } from '@/components/data-stream-handler';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
 import { Loader2 } from 'lucide-react';
 import { UIMessage } from 'ai';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
-// The single persistent chat ID that should be used
+// The single persistent chat ID
 const SINGLE_CHAT_ID = "persistent-chat";
 
-export default function ChatPage() {
-  const params = useParams();
-  const router = useRouter();
-  
-  // Extract the chat ID from params
-  const id = String(params?.id || '');
-  
-  // Redirect to the persistent chat ID if the user tries to access any other chat
-  useEffect(() => {
-    if (id && id !== SINGLE_CHAT_ID) {
-      router.replace(`/chat/${SINGLE_CHAT_ID}`);
-    }
-  }, [id, router]);
-  
+export default function PersistentChatPage() {
   // Empty initial messages array for client-side rendering
   const initialMessages: UIMessage[] = [];
   
@@ -46,4 +31,4 @@ export default function ChatPage() {
       <DataStreamHandler id={SINGLE_CHAT_ID} />
     </Suspense>
   );
-}
+} 
